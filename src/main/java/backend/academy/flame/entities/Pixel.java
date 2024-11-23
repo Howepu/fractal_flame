@@ -11,6 +11,13 @@ public record Pixel(int r, int g, int b, int hitCount) {
             this.hitCount + 1
         );
     }
+
+    public Pixel enhance(double factor) {
+        return new Pixel(
+            Math.min(D, (int) (r * factor)),
+            Math.min(D, (int) (g * factor)),
+            Math.min(D, (int) (b * factor)),
+            hitCount
+        );
+    }
 }
-
-

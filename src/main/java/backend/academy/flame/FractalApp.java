@@ -7,7 +7,13 @@ import backend.academy.flame.image.GammaCorrection;
 import backend.academy.flame.image.ImageFormat;
 import backend.academy.flame.image.ImageProcessor;
 import backend.academy.flame.image.ImageUtils;
-import backend.academy.flame.transformations.*;
+import backend.academy.flame.transformations.EyefishTransformation;
+import backend.academy.flame.transformations.HeartTransformation;
+import backend.academy.flame.transformations.SpiralTransformation;
+import backend.academy.flame.transformations.SquareTransformation;
+import backend.academy.flame.transformations.SwirlTransformation;
+import backend.academy.flame.transformations.TangentTransfortmation;
+import backend.academy.flame.transformations.Transformation;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -29,24 +35,27 @@ public class FractalApp {
         logSystemConfiguration(); // Вывод конфигурации системы
 
         Scanner scanner = new Scanner(System.in);
-        log.info("Введите ширину:");
+        log.info("Введите ширину изображения (например, 1920):");
         int width = scanner.nextInt();
         scanner.nextLine(); // Очистка после nextInt()
 
-        log.info("Введите высоту:");
+        log.info("Введите высоту изображения (например, 1080):");
         int height = scanner.nextInt();
         scanner.nextLine(); // Очистка после nextInt()
 
-        log.info("Введите количество итераций:");
+        log.info("Введите количество итераций (например, 50):");
         int iterations = scanner.nextInt();
         scanner.nextLine(); // Очистка после nextInt()
 
         log.info("Введите формат изображения (например, PNG):");
         String format = scanner.nextLine().trim().toUpperCase();
 
+        // Определение координат для фрактала
         Rect world = new Rect(-10, -10, 20, 20); // Координаты мира
+
+        // Ввод трансформаций
         List<Transformation> transformations = new ArrayList<>();
-        log.info("Введите трансформации (1-Eyefish, 2-Heart, 3-Spiral, 4-Square, 5-Swirl, 6-Tangent):"); // Пример: 1, 3, 5
+        log.info("Введите трансформации (например: 1,3,5 для Eyefish, Spiral, Swirl):");
         String transformationsInput = scanner.nextLine();
         for (String trStr : transformationsInput.split(",")) {
             int tr = Integer.parseInt(trStr.trim());
@@ -61,18 +70,19 @@ public class FractalApp {
             }
         }
 
-
         FractalImage canvas = FractalImage.create(width, height);
         FractalRenderer renderer = new FractalRenderer();
 
-        // Время для многопоточной обработки
+        // Многопоточная обработка
+        log.info("Начинаем многопоточную обработку...");
         long startTimeMulti = System.currentTimeMillis();
-        FractalImage renderedImageMultiThreaded = renderer.render(canvas, world, transformations, SAMPLES,
+        FractalImage renderedImageMultiThreaded = renderer.renderMultithreaded(canvas, world, transformations, SAMPLES,
             iterations, THREADS);
         long endTimeMulti = System.currentTimeMillis();
         log.info("Многопоточная обработка заняла: {} мс", (endTimeMulti - startTimeMulti));
 
-        // Время для однопоточной обработки
+        // Однопоточная обработка
+        log.info("Начинаем однопоточную обработку...");
         long startTime = System.currentTimeMillis();
         FractalImage renderedImageSingleThreaded = renderer.renderSingleThreaded(canvas, world, transformations,
             SAMPLES, iterations);
@@ -80,16 +90,21 @@ public class FractalApp {
         log.info("Однопоточная обработка заняла: {} мс", (endTime - startTime));
 
         // Разница во времени
-        log.info("Разница во времени: {} мс", ((endTime - startTime) - (endTimeMulti - startTimeMulti)));
+        log.info("Разница во времени (многопоточный - однопоточный): {} мс",
+            ((endTime - startTime) - (endTimeMulti - startTimeMulti)));
 
-        // Пост-обработка
-        ImageProcessor gammaProcessor = new GammaCorrection(2.2);
+        // Пост-обработка (гамма-коррекция)
+        log.info("Применяем гамма-коррекцию к изображению...");
+        ImageProcessor gammaProcessor = new GammaCorrection(2.2, 1);
         gammaProcessor.process(renderedImageMultiThreaded);
 
-        // Сохранение
+        // Сохранение изображения
         Path outputPath = Paths.get("fractal_flame.png");
         ImageUtils.save(renderedImageMultiThreaded, outputPath, ImageFormat.valueOf(format));
         log.info("Фрактал сохранен в {}", outputPath);
+
+        // Подтверждение завершения программы
+        log.info("Программа завершена. Выход.");
     }
 
     private static void logSystemConfiguration() {

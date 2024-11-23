@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
 
-@SuppressWarnings({"checkstyle:ImportOrder", "checkstyle:MagicNumber"})
+@SuppressWarnings("checkstyle:MagicNumber")
 public final class ImageUtils {
     private ImageUtils() {}
 
@@ -21,6 +21,6 @@ public final class ImageUtils {
             }
         }
 
-        ImageIO.write(bufferedImage, format.name(), filename.toFile());
+        ImageIO.write(bufferedImage, format.name().toLowerCase(), filename.toFile());
     }
 }
