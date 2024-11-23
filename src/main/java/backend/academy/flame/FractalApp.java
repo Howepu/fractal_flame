@@ -55,7 +55,7 @@ public class FractalApp {
 
         // Ввод трансформаций
         List<Transformation> transformations = new ArrayList<>();
-        log.info("Введите трансформации (1-Eyefish, 2-Heart, 3-Spiral, 4-Square, 5-Swirl, 6-Tangent):"); // Пример: 1, 3, 5
+        log.info("Введите трансформации (1-Eyefish, 2-Heart, 3-Spiral, 4-Square, 5-Swirl, 6-Tangent):"); //Пример: 1,3,5
         String transformationsInput = scanner.nextLine();
         for (String trStr : transformationsInput.split(",")) {
             int tr = Integer.parseInt(trStr.trim());
