@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ForkJoinPool;
 
 
+@SuppressWarnings("checkstyle:ParameterAssignment")
 public class FractalRenderer {
     private static final int NUMBER_1 = 200;
     private static final int NUMBER_2 = 200;
@@ -28,27 +29,7 @@ public class FractalRenderer {
                 Point point;
                 for (int i = 0; i < samplesPerThread; i++) {
                     point = randomPoint(world);
-                    for (int j = 0; j < iterations; j++) {
-                        Transformation transformation = transformations
-                            .get(threadLocalRandom.nextInt(transformations.size()));
-                        point = transformation.apply(point);
-                        if (!world.contains(point)) {
-                            continue;
-                        }
-
-                        int x = (int) ((point.x() - world.x()) / world.width() * canvas.width());
-                        int y = (int) ((point.y() - world.y()) / world.height() * canvas.height());
-
-                        if (canvas.contains(x, y)) {
-                            int randomR = threadLocalRandom.nextInt(NUMBER_1) + NUMBER_2;
-                            int randomG = threadLocalRandom.nextInt(NUMBER_1) + NUMBER_2;
-                            int randomB = threadLocalRandom.nextInt(NUMBER_1) + NUMBER_2;
-
-                            Pixel currentPixel = canvas.pixel(x, y);
-                            Pixel newPixel = currentPixel.addColor(randomR, randomG, randomB);
-                            canvas.setPixel(x, y, newPixel);
-                        }
-                    }
+                    processPoint(canvas, world, transformations, point, threadLocalRandom, iterations);
                 }
                 return null;
             });
@@ -67,28 +48,34 @@ public class FractalRenderer {
         int samples, int iterations) {
         for (int i = 0; i < samples; i++) {
             Point point = randomPoint(world);
-            for (int j = 0; j < iterations; j++) {
-                Transformation transformation = transformations.get(RANDOM.nextInt(transformations.size()));
-                point = transformation.apply(point);
-                if (!world.contains(point)) {
-                    continue;
-                }
-
-                int x = (int) ((point.x() - world.x()) / world.width() * canvas.width());
-                int y = (int) ((point.y() - world.y()) / world.height() * canvas.height());
-
-                if (canvas.contains(x, y)) {
-                    int randomR = RANDOM.nextInt(NUMBER_1) + NUMBER_2;
-                    int randomG = RANDOM.nextInt(NUMBER_1) + NUMBER_2;
-                    int randomB = RANDOM.nextInt(NUMBER_1) + NUMBER_2;
-
-                    Pixel currentPixel = canvas.pixel(x, y);
-                    Pixel newPixel = currentPixel.addColor(randomR, randomG, randomB);
-                    canvas.setPixel(x, y, newPixel);
-                }
-            }
+            processPoint(canvas, world, transformations, point, RANDOM, iterations);
         }
         return canvas;
+    }
+
+    // Общая логика обработки точки и обновления пикселя
+    private void processPoint(FractalImage canvas, Rect world, List<Transformation> transformations, Point point,
+        Random random, int iterations) {
+        for (int j = 0; j < iterations; j++) {
+            Transformation transformation = transformations.get(random.nextInt(transformations.size()));
+            point = transformation.apply(point);
+            if (!world.contains(point)) {
+                continue;
+            }
+
+            int x = (int) ((point.x() - world.x()) / world.width() * canvas.width());
+            int y = (int) ((point.y() - world.y()) / world.height() * canvas.height());
+
+            if (canvas.contains(x, y)) {
+                int randomR = random.nextInt(NUMBER_1) + NUMBER_2;
+                int randomG = random.nextInt(NUMBER_1) + NUMBER_2;
+                int randomB = random.nextInt(NUMBER_1) + NUMBER_2;
+
+                Pixel currentPixel = canvas.pixel(x, y);
+                Pixel newPixel = currentPixel.addColor(randomR, randomG, randomB);
+                canvas.setPixel(x, y, newPixel);
+            }
+        }
     }
 
     private Point randomPoint(Rect world) {
