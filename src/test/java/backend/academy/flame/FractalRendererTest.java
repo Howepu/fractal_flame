@@ -18,7 +18,7 @@ class FractalRendererTest {
         int width = 1920;
         int height = 1080;
         int samples = 10000;
-        int iterations = 10;
+        int iterations = 1000;
         int threads = 4;
 
         Rect world = new Rect(-1, -1, 2, 2);
