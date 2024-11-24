@@ -41,8 +41,8 @@ class FractalRendererTest {
         renderer.renderMultithreaded(canvasMulti, world, transformations, samples, iterations, threads);
         long durationMulti = System.nanoTime() - startMulti;
 
-        System.out.printf("Однопоточная обработка: %d ms%n", durationSingle / 1_000_000);
-        System.out.printf("Многопоточная обработка: %d ms%n", durationMulti / 1_000_000);
+        System.out.printf("Однопоточная обработка: %d ms%n", durationSingle / 1000000);
+        System.out.printf("Многопоточная обработка: %d ms%n", durationMulti / 1000000);
 
         assertTrue(durationMulti < durationSingle, "Многопоточная обработка должна быть быстрее");
     }
