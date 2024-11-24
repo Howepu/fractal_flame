@@ -10,11 +10,11 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ForkJoinPool;
 
 
-@SuppressWarnings("checkstyle:ParameterAssignment")
+@SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:ParameterAssignment"})
 public class FractalRenderer {
-    private static final int NUMBER_1 = 200;
-    private static final int NUMBER_2 = 200;
     private static final Random RANDOM = new Random();
+    private static  final int PIXEL = 256;
+    private static final int NUMBER = 100;
 
     // Многопоточная версия рендеринга
     public FractalImage renderMultithreaded(FractalImage canvas, Rect world, List<Transformation> transformations,
@@ -67,16 +67,30 @@ public class FractalRenderer {
             int y = (int) ((point.y() - world.y()) / world.height() * canvas.height());
 
             if (canvas.contains(x, y)) {
-                int randomR = random.nextInt(NUMBER_1) + NUMBER_2;
-                int randomG = random.nextInt(NUMBER_1) + NUMBER_2;
-                int randomB = random.nextInt(NUMBER_1) + NUMBER_2;
+                // Плавное изменение цвета с учётом количества попаданий
+                int baseColorR = (int) (Math.min(PIXEL, point.x() * NUMBER));
+                int baseColorG = (int) (Math.min(PIXEL, point.y() * NUMBER));
+                int baseColorB = PIXEL - (int) (Math.min(PIXEL, (point.x() + point.y()) * 50));
 
                 Pixel currentPixel = canvas.pixel(x, y);
-                Pixel newPixel = currentPixel.addColor(randomR, randomG, randomB);
+
+                // Смешиваем текущий цвет с новым для создания плавных переходов
+                Pixel newPixel = currentPixel.addColor(baseColorR, baseColorG, baseColorB);
+
+                // Можно также учитывать количество попаданий, чтобы сделать цвета более яркими
+                int additionalBrightness = Math.min(PIXEL, currentPixel.hitCount() * 10);
+                newPixel = new Pixel(
+                    Math.min(PIXEL, newPixel.r() + additionalBrightness),
+                    Math.min(PIXEL, newPixel.g() + additionalBrightness),
+                    Math.min(PIXEL, newPixel.b() + additionalBrightness),
+                    newPixel.hitCount()
+                );
+
                 canvas.setPixel(x, y, newPixel);
             }
         }
     }
+
 
     private Point randomPoint(Rect world) {
         double x = world.x() + RANDOM.nextDouble() * world.width();

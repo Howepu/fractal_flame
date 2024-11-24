@@ -7,13 +7,14 @@ import backend.academy.flame.image.GammaCorrection;
 import backend.academy.flame.image.ImageFormat;
 import backend.academy.flame.image.ImageProcessor;
 import backend.academy.flame.image.ImageUtils;
+import backend.academy.flame.transformations.CrossTransformation;
 import backend.academy.flame.transformations.EyefishTransformation;
 import backend.academy.flame.transformations.HeartTransformation;
 import backend.academy.flame.transformations.SpiralTransformation;
-import backend.academy.flame.transformations.SquareTransformation;
 import backend.academy.flame.transformations.SwirlTransformation;
 import backend.academy.flame.transformations.TangentTransfortmation;
 import backend.academy.flame.transformations.Transformation;
+import backend.academy.flame.transformations.WavesTransformation;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -55,7 +56,8 @@ public class FractalApp {
 
         // Ввод трансформаций
         List<Transformation> transformations = new ArrayList<>();
-        log.info("Введите трансформации (1-Eyefish, 2-Heart, 3-Spiral, 4-Square, 5-Swirl, 6-Tangent):"); //Пример: 1,3,5
+        //Пример: 1,3,5
+        log.info("Введите трансформации (1-Eyefish, 2-Heart, 3-Spiral, 4-Swirl, 5-Waves, 6-Tangent, 7-Fan:");
         String transformationsInput = scanner.nextLine();
         for (String trStr : transformationsInput.split(",")) {
             int tr = Integer.parseInt(trStr.trim());
@@ -63,9 +65,10 @@ public class FractalApp {
                 case 1 -> transformations.add(new EyefishTransformation());
                 case 2 -> transformations.add(new HeartTransformation());
                 case 3 -> transformations.add(new SpiralTransformation());
-                case 4 -> transformations.add(new SquareTransformation());
-                case 5 -> transformations.add(new SwirlTransformation());
+                case 4 -> transformations.add(new SwirlTransformation());
+                case 5 -> transformations.add(new WavesTransformation());
                 case 6 -> transformations.add(new TangentTransfortmation());
+                case 7 -> transformations.add(new CrossTransformation());
                 default -> log.warn("Неизвестная трансформация: {}", tr);
             }
         }

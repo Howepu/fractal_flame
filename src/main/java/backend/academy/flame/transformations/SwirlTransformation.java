@@ -11,5 +11,6 @@ public class SwirlTransformation implements Transformation {
         double newY = point.x() * Math.cos(Math.pow(r, 2)) + point.y() * Math.sin(Math.pow(r, 2));
         return new Point(newX, newY);
 
+
     }
 }
