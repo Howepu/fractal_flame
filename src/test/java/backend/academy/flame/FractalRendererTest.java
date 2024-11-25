@@ -26,9 +26,9 @@ class FractalRendererTest {
         FractalImage canvasMulti = FractalImage.create(width, height);
 
         List<Transformation> transformations = List.of(
-            new SwirlTransformation(),
-            new HeartTransformation(),
-            new EyefishTransformation()
+            new SwirlTransformation(1, 0, 0, 0, 1, 0),
+            new HeartTransformation(1, 0, 0, 0, 1, 0),
+            new EyefishTransformation(1, 0, 0, 0, 1, 0)
         );
 
         FractalRenderer renderer = new FractalRenderer();

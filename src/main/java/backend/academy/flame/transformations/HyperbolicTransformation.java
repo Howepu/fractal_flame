@@ -4,7 +4,7 @@ import backend.academy.flame.entities.Point;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class SwirlTransformation implements Transformation {
+public class HyperbolicTransformation implements Transformation {
     private final double a;
     private final double b;
     private final double c;
@@ -17,10 +17,9 @@ public class SwirlTransformation implements Transformation {
         double affineX = a * point.x() + b * point.y() + c;
         double affineY = d * point.x() + e * point.y() + f;
         double r = Math.sqrt(affineX * affineX + affineY * affineY);
-        double newX = affineX * Math.sin(Math.pow(r, 2)) - affineY * Math.cos(Math.pow(r, 2));
-        double newY = affineX * Math.cos(Math.pow(r, 2)) + affineY * Math.sin(Math.pow(r, 2));
+        double s = (affineY != 0) ? Math.atan(affineX / affineY) : 0;
+        double newX = Math.sin(s) / r;
+        double newY = r * Math.cos(s);
         return new Point(newX, newY);
-
-
     }
 }

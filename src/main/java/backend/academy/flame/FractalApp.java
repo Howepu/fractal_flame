@@ -10,6 +10,7 @@ import backend.academy.flame.image.ImageUtils;
 import backend.academy.flame.transformations.CrossTransformation;
 import backend.academy.flame.transformations.EyefishTransformation;
 import backend.academy.flame.transformations.HeartTransformation;
+import backend.academy.flame.transformations.HyperbolicTransformation;
 import backend.academy.flame.transformations.SpiralTransformation;
 import backend.academy.flame.transformations.SwirlTransformation;
 import backend.academy.flame.transformations.TangentTransfortmation;
@@ -36,40 +37,43 @@ public class FractalApp {
         logSystemConfiguration(); // Вывод конфигурации системы
 
         Scanner scanner = new Scanner(System.in);
-        log.info("Введите ширину изображения (например, 1920):");
-        int width = scanner.nextInt();
-        scanner.nextLine(); // Очистка после nextInt()
 
-        log.info("Введите высоту изображения (например, 1080):");
-        int height = scanner.nextInt();
-        scanner.nextLine(); // Очистка после nextInt()
+        // Проверка ширины
+        int width = readPositiveInt(scanner, "Введите ширину изображения (например, 1920):");
 
-        log.info("Введите количество итераций (например, 50):");
-        int iterations = scanner.nextInt();
-        scanner.nextLine(); // Очистка после nextInt()
+        // Проверка высоты
+        int height = readPositiveInt(scanner, "Введите высоту изображения (например, 1080):");
 
-        log.info("Введите формат изображения (например, PNG):");
-        String format = scanner.nextLine().trim().toUpperCase();
+        // Проверка количества итераций
+        int iterations = readPositiveInt(scanner, "Введите количество итераций (например, 50):");
+
+        // Проверка формата изображения
+        String format = readImageFormat(scanner);
 
         // Определение координат для фрактала
         Rect world = new Rect(-10, -10, 20, 20); // Координаты мира
 
         // Ввод трансформаций
         List<Transformation> transformations = new ArrayList<>();
-        //Пример: 1,3,5
-        log.info("Введите трансформации (1-Eyefish, 2-Heart, 3-Spiral, 4-Swirl, 5-Waves, 6-Tangent, 7-Fan:");
+        log.info("Введите трансформации: (1-Eyefish, 2-Heart, 3-Spiral, 4-Swirl, 5-Waves, 6-Tangent, 7-Cross, "
+            + "8-Hyperbolic)");
         String transformationsInput = scanner.nextLine();
         for (String trStr : transformationsInput.split(",")) {
-            int tr = Integer.parseInt(trStr.trim());
-            switch (tr) {
-                case 1 -> transformations.add(new EyefishTransformation());
-                case 2 -> transformations.add(new HeartTransformation());
-                case 3 -> transformations.add(new SpiralTransformation());
-                case 4 -> transformations.add(new SwirlTransformation());
-                case 5 -> transformations.add(new WavesTransformation());
-                case 6 -> transformations.add(new TangentTransfortmation());
-                case 7 -> transformations.add(new CrossTransformation());
-                default -> log.warn("Неизвестная трансформация: {}", tr);
+            try {
+                int tr = Integer.parseInt(trStr.trim());
+                switch (tr) {
+                    case 1 -> transformations.add(new EyefishTransformation(1, 0, 0, 0, 1, 0));
+                    case 2 -> transformations.add(new HeartTransformation(1, 0, 0, 0, 1, 0));
+                    case 3 -> transformations.add(new SpiralTransformation(1, 0, 0, 0, 1, 0));
+                    case 4 -> transformations.add(new SwirlTransformation(1, 0, 0, 0, 1, 0));
+                    case 5 -> transformations.add(new WavesTransformation(1, 0, 0, 0, 1, 0));
+                    case 6 -> transformations.add(new TangentTransfortmation(1, 0, 0, 0, 1, 0));
+                    case 7 -> transformations.add(new CrossTransformation(1, 0, 0, 0, 1, 0));
+                    case 8 -> transformations.add(new HyperbolicTransformation(1, 0, 0, 0, 1, 0));
+                    default -> log.warn("Неизвестная трансформация: {}", tr);
+                }
+            } catch (NumberFormatException e) {
+                log.warn("Некорректный формат трансформации: {}", trStr);
             }
         }
 
@@ -121,5 +125,36 @@ public class FractalApp {
         log.info("Объем памяти (всего): {} MB", runtime.totalMemory() / (1024 * 1024));
         log.info("Объем свободной памяти: {} MB", runtime.freeMemory() / (1024 * 1024));
         log.info("=============================");
+    }
+
+    private static int readPositiveInt(Scanner scanner, String prompt) {
+        while (true) {
+            try {
+                log.info(prompt);
+                int value = scanner.nextInt();
+                scanner.nextLine(); // Очистка после nextInt()
+                if (value > 0) {
+                    return value;
+                } else {
+                    log.warn("Значение должно быть положительным числом.");
+                }
+            } catch (Exception e) {
+                log.warn("Введите корректное положительное число.");
+                scanner.nextLine(); // Очистка некорректного ввода
+            }
+        }
+    }
+
+    private static String readImageFormat(Scanner scanner) {
+        while (true) {
+            log.info("Введите формат изображения (например, PNG):");
+            String format = scanner.nextLine().trim().toUpperCase();
+            try {
+                ImageFormat.valueOf(format);
+                return format;
+            } catch (IllegalArgumentException e) {
+                log.warn("Некорректный формат. Допустимые форматы: PNG, JPEG, BMP.");
+            }
+        }
     }
 }

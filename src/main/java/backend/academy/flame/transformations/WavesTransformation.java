@@ -1,19 +1,27 @@
 package backend.academy.flame.transformations;
 
 import backend.academy.flame.entities.Point;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 @SuppressWarnings("checkstyle:MagicNumber")
 public class WavesTransformation implements Transformation {
 
+    private final double a;
+    private final double b;
+    private final double c;
+    private final double d;
+    private final double e;
+    private final double f;
+
     @Override
     public Point apply(Point point) {
-
-        double x = point.x();
-        double y = point.y();
+        double affineX = a * point.x() + b * point.y() + c;
+        double affineY = d * point.x() + e * point.y() + f;
 
         // Применяем формулы
-        double newX = x + 1 * Math.sin(y * 0.5);
-        double newY = y + 0.7 * Math.sin(x * 0.3);
+        double newX = affineX + 1 * Math.sin(affineY * 0.5);
+        double newY = affineY + 0.7 * Math.sin(affineX * 0.3);
 
         return new Point(newX, newY);
     }
