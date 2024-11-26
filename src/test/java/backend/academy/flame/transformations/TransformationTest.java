@@ -38,15 +38,15 @@ class TransformationTest {
         Point transformedPoint = crossTransformation.apply(inputPoint);
         assertNotNull(transformedPoint);
         assertEquals(0.4, transformedPoint.x(), 0.001);
-        assertEquals(0.6000000000000001, transformedPoint.y(), 0.001);
+        assertEquals(0.6, transformedPoint.y(), 0.001);
     }
 
     @Test
     void testEyefishTransformation() {
         Point transformedPoint = eyefishTransformation.apply(inputPoint);
         assertNotNull(transformedPoint);
-        assertEquals(0.8685170918213297, transformedPoint.x(), 0.001);  // Проверка с ожидаемым значением для X
-        assertEquals(1.3027756377319946, transformedPoint.y(), 0.001);  // Используем точное значение для Y
+        assertEquals(0.868, transformedPoint.x(), 0.001);  // Проверка с ожидаемым значением для X
+        assertEquals(1.302, transformedPoint.y(), 0.001);  // Используем точное значение для Y
     }
 
 
@@ -94,7 +94,7 @@ class TransformationTest {
     void testWavesTransformation() {
         Point transformedPoint = wavesTransformation.apply(inputPoint);
         assertNotNull(transformedPoint);
-        assertEquals(2.9974949866040546, transformedPoint.x(), 0.001);  // Проверка с ожидаемым значением
-        assertEquals(3.395249731376525, transformedPoint.y(), 0.001);  // Проверка с ожидаемым значением
+        assertEquals(2.997, transformedPoint.x(), 0.001);  // Проверка с ожидаемым значением
+        assertEquals(3.395, transformedPoint.y(), 0.001);  // Проверка с ожидаемым значением
     }
 }
