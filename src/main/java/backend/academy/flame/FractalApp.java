@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FractalApp {
     private static final int SAMPLES = 100000;
     private static final int THREADS = 4;
+    private static final String CORRECTION = "Применяем гамма-коррекцию к изображению...";
 
     private FractalApp() {
         throw new AssertionError("Не удается создать экземпляр служебного класса");
@@ -36,7 +37,10 @@ public class FractalApp {
     public static void main(String[] args) throws Exception {
         logSystemConfiguration(); // Вывод конфигурации системы
 
+        log.info("Используется {} потока", THREADS);
+
         Scanner scanner = new Scanner(System.in);
+        Path outputPath = Paths.get("fractal_flame.png");
 
         // Проверка ширины
         int width = readPositiveInt(scanner, "Введите ширину изображения (например, 1920):");
@@ -77,37 +81,40 @@ public class FractalApp {
             }
         }
 
+
+
         FractalImage canvas = FractalImage.create(width, height);
         FractalRenderer renderer = new FractalRenderer();
-
-        // Многопоточная обработка
-        log.info("Начинаем многопоточную обработку...");
-        long startTimeMulti = System.currentTimeMillis();
-        FractalImage renderedImageMultiThreaded = renderer.renderMultithreaded(canvas, world, transformations, SAMPLES,
-            iterations, THREADS);
-        long endTimeMulti = System.currentTimeMillis();
-        log.info("Многопоточная обработка заняла: {} мс", (endTimeMulti - startTimeMulti));
-
-        // Однопоточная обработка
-        log.info("Начинаем однопоточную обработку...");
-        long startTime = System.currentTimeMillis();
-        FractalImage renderedImageSingleThreaded = renderer.renderSingleThreaded(canvas, world, transformations,
-            SAMPLES, iterations);
-        long endTime = System.currentTimeMillis();
-        log.info("Однопоточная обработка заняла: {} мс", (endTime - startTime));
-
-        // Разница во времени
-        log.info("Разница во времени (многопоточный - однопоточный): {} мс",
-            ((endTime - startTime) - (endTimeMulti - startTimeMulti)));
-
-        // Пост-обработка (гамма-коррекция)
-        log.info("Применяем гамма-коррекцию к изображению...");
-        ImageProcessor gammaProcessor = new GammaCorrection(2.2, 1);
-        gammaProcessor.process(renderedImageMultiThreaded);
-
-        // Сохранение изображения
-        Path outputPath = Paths.get("fractal_flame.png");
-        ImageUtils.save(renderedImageMultiThreaded, outputPath, ImageFormat.valueOf(format));
+        int threading = readThread(scanner);
+        if (threading == 1) {
+            // Многопоточная обработка
+            log.info("Начинаем многопоточную обработку...");
+            long startTimeMulti = System.currentTimeMillis();
+            FractalImage renderedImageMultiThreaded = renderer.renderMultithreaded(canvas, world, transformations,
+                SAMPLES, iterations, THREADS);
+            long endTimeMulti = System.currentTimeMillis();
+            log.info("Многопоточная обработка заняла: {} мс", (endTimeMulti - startTimeMulti));
+            // Пост-обработка (гамма-коррекция)
+            log.info(CORRECTION);
+            ImageProcessor gammaProcessor = new GammaCorrection(2.2, 1);
+            gammaProcessor.process(renderedImageMultiThreaded);
+            // Сохранение изображения
+            ImageUtils.save(renderedImageMultiThreaded, outputPath, ImageFormat.valueOf(format));
+        } else {
+            // Однопоточная обработка
+            log.info("Начинаем однопоточную обработку...");
+            long startTime = System.currentTimeMillis();
+            FractalImage renderedImageSingleThreaded = renderer.renderSingleThreaded(canvas, world, transformations,
+                SAMPLES, iterations);
+            long endTime = System.currentTimeMillis();
+            log.info("Однопоточная обработка заняла: {} мс", (endTime - startTime));
+            // Пост-обработка (гамма-коррекция)
+            log.info(CORRECTION);
+            ImageProcessor gammaProcessor = new GammaCorrection(2.2, 1);
+            gammaProcessor.process(renderedImageSingleThreaded);
+            // Сохранение изображения
+            ImageUtils.save(renderedImageSingleThreaded, outputPath, ImageFormat.valueOf(format));
+        }
         log.info("Фрактал сохранен в {}", outputPath);
 
         // Подтверждение завершения программы
@@ -139,7 +146,6 @@ public class FractalApp {
                     log.warn("Значение должно быть положительным числом.");
                 }
             } catch (Exception e) {
-                log.warn("Введите корректное положительное число.");
                 scanner.nextLine(); // Очистка некорректного ввода
             }
         }
@@ -154,6 +160,23 @@ public class FractalApp {
                 return format;
             } catch (IllegalArgumentException e) {
                 log.warn("Некорректный формат. Допустимые форматы: PNG, JPEG, BMP.");
+            }
+        }
+    }
+
+    private static int readThread(Scanner scanner) {
+        while (true) {
+            try {
+                log.info("Выберите режим запуска: (1-многопоточный или 2-однопоточный)");
+                int value = scanner.nextInt();
+                scanner.nextLine(); // Очистка после nextInt()
+                if (value > 0 && (value == 1 || value == 2)) {
+                    return value;
+                } else {
+                    log.warn("Значение должно быть: 1 или 2.");
+                }
+            } catch (Exception e) {
+                scanner.nextLine(); // Очистка некорректного ввода
             }
         }
     }
