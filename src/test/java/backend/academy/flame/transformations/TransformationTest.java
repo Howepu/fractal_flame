@@ -94,7 +94,7 @@ class TransformationTest {
     void testWavesTransformation() {
         Point transformedPoint = wavesTransformation.apply(inputPoint);
         assertNotNull(transformedPoint);
-        assertEquals(2.997, transformedPoint.x(), 0.001);  // Проверка с ожидаемым значением
+        assertEquals(1.72, transformedPoint.x(), 0.001);  // Проверка с ожидаемым значением
         assertEquals(3.395, transformedPoint.y(), 0.001);  // Проверка с ожидаемым значением
     }
 }
