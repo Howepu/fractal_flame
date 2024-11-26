@@ -20,8 +20,8 @@ public class WavesTransformation implements Transformation {
         double affineY = d * point.x() + e * point.y() + f;
 
         // Применяем формулы
-        double newX = affineX + 1 * Math.sin(affineY * 0.5);
-        double newY = affineY + 0.7 * Math.sin(affineX * 0.3);
+        double newX = affineX + 1 * Math.sin(affineY / 0.5 * 0.5);
+        double newY = affineY + 0.7 * Math.sin(affineX / 0.3 * 0.3);
 
         return new Point(newX, newY);
     }
