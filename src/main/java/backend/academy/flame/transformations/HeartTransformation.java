@@ -18,7 +18,7 @@ public class HeartTransformation implements Transformation {
         double affineY = d * point.x() + e * point.y() + f;
 
         double r = Math.sqrt(affineX * affineX + affineY * affineY);
-        double theta = Math.atan(affineX/affineY);
+        double theta = Math.atan(affineX / affineY);
         double newX = r * Math.sin(theta * r);
         double newY = -r * Math.cos(theta * r);
 

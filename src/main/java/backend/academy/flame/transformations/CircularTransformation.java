@@ -3,9 +3,16 @@ package backend.academy.flame.transformations;
 import backend.academy.flame.entities.Point;
 import lombok.AllArgsConstructor;
 
+@SuppressWarnings("checkstyle:MagicNumber")
 @AllArgsConstructor
 public class CircularTransformation implements Transformation {
-    private final double a, b, c, d, e, f;
+    private final double a;
+    private final double b;
+    private final double c;
+    private final double d;
+    private final double e;
+    private final double f;
+
 
     @Override
     public Point apply(Point point) {
