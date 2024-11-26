@@ -7,6 +7,7 @@ import backend.academy.flame.image.GammaCorrection;
 import backend.academy.flame.image.ImageFormat;
 import backend.academy.flame.image.ImageProcessor;
 import backend.academy.flame.image.ImageUtils;
+import backend.academy.flame.transformations.CircularTransformation;
 import backend.academy.flame.transformations.CrossTransformation;
 import backend.academy.flame.transformations.EyefishTransformation;
 import backend.academy.flame.transformations.HeartTransformation;
@@ -40,7 +41,7 @@ public class FractalApp {
         log.info("Используется {} потока", THREADS);
 
         Scanner scanner = new Scanner(System.in);
-        Path outputPath = Paths.get("fractal_flame.png");
+        Path outputPath = Paths.get("fractal_flame");
 
         // Проверка ширины
         int width = readPositiveInt(scanner, "Введите ширину изображения (например, 1920):");
@@ -53,6 +54,7 @@ public class FractalApp {
 
         // Проверка формата изображения
         String format = readImageFormat(scanner);
+        outputPath = Path.of(outputPath + "." + format.toLowerCase());
 
         // Определение координат для фрактала
         Rect world = new Rect(-10, -10, 20, 20); // Координаты мира
@@ -60,20 +62,31 @@ public class FractalApp {
         // Ввод трансформаций
         List<Transformation> transformations = new ArrayList<>();
         log.info("Введите трансформации: (1-Eyefish, 2-Heart, 3-Spiral, 4-Swirl, 5-Waves, 6-Tangent, 7-Cross, "
-            + "8-Hyperbolic)");
+            + "8-Hyperbolic, 9-Circular)");
         String transformationsInput = scanner.nextLine();
         for (String trStr : transformationsInput.split(",")) {
             try {
                 int tr = Integer.parseInt(trStr.trim());
+                double[] coefficients = readCoefficients(scanner); // Считывание коэффициентов
                 switch (tr) {
-                    case 1 -> transformations.add(new EyefishTransformation(1, 0, 0, 0, 1, 0));
-                    case 2 -> transformations.add(new HeartTransformation(1, 0, 0, 0, 1, 0));
-                    case 3 -> transformations.add(new SpiralTransformation(1, 0, 0, 0, 1, 0));
-                    case 4 -> transformations.add(new SwirlTransformation(1, 0, 0, 0, 1, 0));
-                    case 5 -> transformations.add(new WavesTransformation(1, 0, 0, 0, 1, 0));
-                    case 6 -> transformations.add(new TangentTransfortmation(1, 0, 0, 0, 1, 0));
-                    case 7 -> transformations.add(new CrossTransformation(1, 0, 0, 0, 1, 0));
-                    case 8 -> transformations.add(new HyperbolicTransformation(1, 0, 0, 0, 1, 0));
+                    case 1 -> transformations.add(new EyefishTransformation(coefficients[0], coefficients[1],
+                        coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
+                    case 2 -> transformations.add(new HeartTransformation(coefficients[0], coefficients[1],
+                        coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
+                    case 3 -> transformations.add(new SpiralTransformation(coefficients[0], coefficients[1],
+                        coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
+                    case 4 -> transformations.add(new SwirlTransformation(coefficients[0], coefficients[1],
+                        coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
+                    case 5 -> transformations.add(new WavesTransformation(coefficients[0], coefficients[1],
+                        coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
+                    case 6 -> transformations.add(new TangentTransfortmation(coefficients[0], coefficients[1],
+                        coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
+                    case 7 -> transformations.add(new CrossTransformation(coefficients[0], coefficients[1],
+                        coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
+                    case 8 -> transformations.add(new HyperbolicTransformation(coefficients[0], coefficients[1],
+                        coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
+                    case 9 -> transformations.add(new CircularTransformation(coefficients[0], coefficients[1],
+                        coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
                     default -> log.warn("Неизвестная трансформация: {}", tr);
                 }
             } catch (NumberFormatException e) {
@@ -81,11 +94,10 @@ public class FractalApp {
             }
         }
 
-
-
         FractalImage canvas = FractalImage.create(width, height);
         FractalRenderer renderer = new FractalRenderer();
-        int threading = readThread(scanner);
+        log.info("Выберите режим запуска: (1-многопоточный или 2-однопоточный)");
+        int threading = readOneOrTwo(scanner);
         if (threading == 1) {
             // Многопоточная обработка
             log.info("Начинаем многопоточную обработку...");
@@ -164,13 +176,12 @@ public class FractalApp {
         }
     }
 
-    private static int readThread(Scanner scanner) {
+    private static int readOneOrTwo(Scanner scanner) {
         while (true) {
             try {
-                log.info("Выберите режим запуска: (1-многопоточный или 2-однопоточный)");
                 int value = scanner.nextInt();
                 scanner.nextLine(); // Очистка после nextInt()
-                if (value > 0 && (value == 1 || value == 2)) {
+                if (value == 1 || value == 2) {
                     return value;
                 } else {
                     log.warn("Значение должно быть: 1 или 2.");
@@ -179,5 +190,38 @@ public class FractalApp {
                 scanner.nextLine(); // Очистка некорректного ввода
             }
         }
+    }
+
+    // Метод для чтения коэффициентов
+    private static double[] readCoefficients(Scanner scanner) {
+        double[] coefficients = new double[6];
+        log.info("Вы хотите ввести свои коэффициенты или оставить стандартные? (1-свои, 2-стандартные)");
+        int n = readOneOrTwo(scanner);
+        if (n == 1) {
+            String[] prompts = {"Введите коэффициент a:", "Введите коэффициент b:", "Введите коэффициент c:",
+                "Введите коэффициент d:", "Введите коэффициент e:", "Введите коэффициент f:"};
+            for (int i = 0; i < coefficients.length; i++) {
+                while (true) {
+                    try {
+                        log.info(prompts[i]);
+                        coefficients[i] = scanner.nextDouble();
+                        break;
+                    } catch (Exception e) {
+                        scanner.nextLine(); // Очистка некорректного ввода
+                        log.warn("Введите допустимое числовое значение.");
+                    }
+                }
+            }
+            scanner.nextLine(); // Очистка после ввода
+        } else {
+            for (int i = 0; i < coefficients.length; i++) {
+                if (i == 0 || i == 4) {
+                    coefficients[i] = 1;
+                } else {
+                    coefficients[i] = 0;
+                }
+            }
+        }
+        return coefficients;
     }
 }
