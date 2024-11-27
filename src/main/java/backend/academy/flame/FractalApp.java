@@ -16,7 +16,6 @@ import backend.academy.flame.transformations.SpiralTransformation;
 import backend.academy.flame.transformations.SwirlTransformation;
 import backend.academy.flame.transformations.TangentTransfortmation;
 import backend.academy.flame.transformations.Transformation;
-import backend.academy.flame.transformations.VortexFlowerTransformation;
 import backend.academy.flame.transformations.WavesTransformation;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,16 +44,16 @@ public class FractalApp {
         Path outputPath = Paths.get("fractal_flame");
 
         // Проверка ширины
-        int width = readPositiveInt(scanner, "Введите ширину изображения (например, 1920):");
+        int width = Checker.readPositiveInt(scanner, "Введите ширину изображения (например, 1920):");
 
         // Проверка высоты
-        int height = readPositiveInt(scanner, "Введите высоту изображения (например, 1080):");
+        int height = Checker.readPositiveInt(scanner, "Введите высоту изображения (например, 1080):");
 
         // Проверка количества итераций
-        int iterations = readPositiveInt(scanner, "Введите количество итераций (например, 50):");
+        int iterations = Checker.readPositiveInt(scanner, "Введите количество итераций (например, 50):");
 
         // Проверка формата изображения
-        String format = readImageFormat(scanner);
+        String format = Checker.readImageFormat(scanner);
         outputPath = Path.of(outputPath + "." + format.toLowerCase());
 
         // Определение координат для фрактала
@@ -70,10 +69,10 @@ public class FractalApp {
                 int tr = Integer.parseInt(trStr.trim());
                 if (tr == 1) {
                     // Если выбран номер 1, вызываем метод для цветка без запроса коэффициентов
-                    transformations.add(readVariationOfFlower(scanner));
+                    transformations.add(Checker.readVariationOfFlower(scanner));
                 } else {
                     // Для других трансформаций — запрашиваем коэффициенты
-                    double[] coefficients = readCoefficients(scanner);
+                    double[] coefficients = Checker.readCoefficients(scanner);
                     switch (tr) {
                         case 2 -> transformations.add(new EyefishTransformation(coefficients[0], coefficients[1],
                             coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
@@ -105,7 +104,7 @@ public class FractalApp {
         FractalImage canvas = FractalImage.create(width, height);
         FractalRenderer renderer = new FractalRenderer();
         log.info("Выберите режим запуска: (1-многопоточный или 2-однопоточный)");
-        int threading = readOneOrTwo(scanner);
+        int threading = Checker.readOneOrTwo(scanner);
         if (threading == 1) {
             // Многопоточная обработка
             log.info("Начинаем многопоточную обработку...");
@@ -152,113 +151,5 @@ public class FractalApp {
         log.info("Объем памяти (всего): {} MB", runtime.totalMemory() / (1024 * 1024));
         log.info("Объем свободной памяти: {} MB", runtime.freeMemory() / (1024 * 1024));
         log.info("=============================");
-    }
-
-    private static int readPositiveInt(Scanner scanner, String prompt) {
-        while (true) {
-            try {
-                log.info(prompt);
-                int value = scanner.nextInt();
-                scanner.nextLine(); // Очистка после nextInt()
-                if (value > 0) {
-                    return value;
-                } else {
-                    log.warn("Значение должно быть положительным числом.");
-                }
-            } catch (Exception e) {
-                log.warn("Значение должно быть числом.");
-                scanner.nextLine(); // Очистка некорректного ввода
-            }
-        }
-    }
-
-    private static String readImageFormat(Scanner scanner) {
-        while (true) {
-            log.info("Введите формат изображения (например, PNG):");
-            String format = scanner.nextLine().trim().toUpperCase();
-            try {
-                ImageFormat.valueOf(format);
-                return format;
-            } catch (IllegalArgumentException e) {
-                log.warn("Некорректный формат. Допустимые форматы: PNG, JPEG, BMP.");
-            }
-        }
-    }
-
-    private static int readOneOrTwo(Scanner scanner) {
-        while (true) {
-            try {
-                int value = scanner.nextInt();
-                scanner.nextLine(); // Очистка после nextInt()
-                if (value == 1 || value == 2) {
-                    return value;
-                } else {
-                    log.warn("Значение должно быть: 1 или 2.");
-                }
-            } catch (Exception e) {
-                scanner.nextLine(); // Очистка некорректного ввода
-            }
-        }
-    }
-
-    // Метод для чтения коэффициентов
-    private static double[] readCoefficients(Scanner scanner) {
-        double[] coefficients = new double[6];
-        log.info("Вы хотите ввести свои коэффициенты или оставить стандартные? (1-свои, 2-стандартные)");
-        int n = readOneOrTwo(scanner);
-        if (n == 1) {
-            String[] prompts = {"Введите коэффициент a:", "Введите коэффициент b:", "Введите коэффициент c:",
-                "Введите коэффициент d:", "Введите коэффициент e:", "Введите коэффициент f:"};
-            for (int i = 0; i < coefficients.length; i++) {
-                while (true) {
-                    try {
-                        log.info(prompts[i]);
-                        coefficients[i] = scanner.nextDouble();
-                        break;
-                    } catch (Exception e) {
-                        scanner.nextLine(); // Очистка некорректного ввода
-                        log.warn("Введите допустимое числовое значение.");
-                    }
-                }
-            }
-            scanner.nextLine(); // Очистка после ввода
-        } else {
-            for (int i = 0; i < coefficients.length; i++) {
-                if (i == 0 || i == 4) {
-                    coefficients[i] = 1;
-                } else {
-                    coefficients[i] = 0;
-                }
-            }
-        }
-        return coefficients;
-    }
-
-    private static int readOneOrTwoOrThree(Scanner scanner) {
-        while (true) {
-            try {
-                int value = scanner.nextInt();
-                scanner.nextLine(); // Очистка после nextInt()
-                if (value == 1 || value == 2 || value == 3) {
-                    return value;
-                } else {
-                    log.warn("Значение должно быть: 1, 2 или 3.");
-                }
-            } catch (Exception e) {
-                scanner.nextLine(); // Очистка некорректного ввода
-            }
-        }
-    }
-
-    private static Transformation readVariationOfFlower(Scanner scanner) {
-        log.info("Какой цветок вы хотите вывести? (1-Стандартный, 2-С маленькими лепестками, 3-С широкими лепестками)");
-        int n = readOneOrTwoOrThree(scanner);
-        if (n == 1) {
-            return VortexFlowerTransformation.createDefault();
-        } else if (n == 2) {
-            return VortexFlowerTransformation.createFlowerWithSmallPetals();
-        } else {
-            return VortexFlowerTransformation.createFlowerWithWidePetals();
-        }
     }
 }
