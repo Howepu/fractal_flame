@@ -3,11 +3,16 @@ package backend.academy.flame;
 import backend.academy.flame.image.ImageFormat;
 import backend.academy.flame.transformations.Transformation;
 import backend.academy.flame.transformations.VortexFlowerTransformation;
-import lombok.extern.slf4j.Slf4j;
 import java.util.Scanner;
+import lombok.extern.slf4j.Slf4j;
 
+@SuppressWarnings("checkstyle:MagicNumber")
 @Slf4j
 public class Checker {
+
+    private Checker() {
+        throw new AssertionError("Не удается создать экземпляр служебного класса");
+    }
 
     public static int readPositiveInt(Scanner scanner, String prompt) {
         while (true) {
