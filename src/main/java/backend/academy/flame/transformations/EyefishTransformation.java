@@ -1,24 +1,28 @@
 package backend.academy.flame.transformations;
 
 import backend.academy.flame.entities.Point;
-import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
-public class EyefishTransformation implements Transformation {
-    private final double a;
-    private final double b;
-    private final double c;
-    private final double d;
-    private final double e;
-    private final double f;
+public class EyefishTransformation extends AffineTransformation {
+
+    // Конструктор, который передает параметры в конструктор родительского класса
+    public EyefishTransformation(double a, double b, double c, double d, double e, double f) {
+        super(a, b, c, d, e, f);
+    }
 
     @Override
-    public Point apply(Point point) {
-        double affineX = a * point.x() + b * point.y() + c; // 2
-        double affineY = d * point.x() + e * point.y() + f; // 3
-        double r = Math.sqrt(affineX * affineX + affineY * affineY); //3,6
-        double newX = (2 / (r + 1)) * affineX; // 0,87
-        double newY = (2 / (r + 1)) * affineY; // 1,3
+    protected Point transformPoint(Point point) {
+        // Применяем аффинное преобразование
+        double affineX = point.x();
+        double affineY = point.y();
+
+        // Расчёт радиуса
+        double r = Math.sqrt(affineX * affineX + affineY * affineY);
+
+        // Применяем искажение (эффект рыбьего глаза)
+        double newX = (2 / (r + 1)) * affineX;
+        double newY = (2 / (r + 1)) * affineY;
+
+        // Возвращаем новую точку после применения эффекта
         return new Point(newX, newY);
     }
 }

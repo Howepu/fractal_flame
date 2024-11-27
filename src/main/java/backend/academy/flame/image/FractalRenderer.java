@@ -9,11 +9,10 @@ import java.util.Random;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ForkJoinPool;
 
-
 @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:ParameterAssignment"})
 public class FractalRenderer {
     private static final Random RANDOM = new Random();
-    private static  final int PIXEL = 256;
+    private static final int PIXEL = 256;
     private static final int NUMBER = 100;
 
     // Многопоточная версия рендеринга
@@ -56,13 +55,14 @@ public class FractalRenderer {
     // Общая логика обработки точки и обновления пикселя
     private void processPoint(FractalImage canvas, Rect world, List<Transformation> transformations, Point point,
         Random random, int iterations) {
-        for (int j = 0; j < iterations; j++) {
+        for (int j = 20; j < iterations; j++) {
             Transformation transformation = transformations.get(random.nextInt(transformations.size()));
             point = transformation.apply(point);
             if (!world.contains(point)) {
                 continue;
             }
 
+            // Корректное преобразование координат
             int x = (int) ((point.x() - world.x()) / world.width() * canvas.width());
             int y = (int) ((point.y() - world.y()) / world.height() * canvas.height());
 
@@ -77,7 +77,6 @@ public class FractalRenderer {
                 // Смешиваем текущий цвет с новым для создания плавных переходов
                 Pixel newPixel = currentPixel.addColor(baseColorR, baseColorG, baseColorB);
 
-                // Можно также учитывать количество попаданий, чтобы сделать цвета более яркими
                 int additionalBrightness = Math.min(PIXEL, currentPixel.hitCount() * 10);
                 newPixel = new Pixel(
                     Math.min(PIXEL, newPixel.r() + additionalBrightness),
@@ -90,7 +89,6 @@ public class FractalRenderer {
             }
         }
     }
-
 
     private Point randomPoint(Rect world) {
         double x = world.x() + RANDOM.nextDouble() * world.width();

@@ -1,22 +1,20 @@
 package backend.academy.flame.transformations;
 
 import backend.academy.flame.entities.Point;
-import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
-public class CrossTransformation implements Transformation {
-    private final double a;
-    private final double b;
-    private final double c;
-    private final double d;
-    private final double e;
-    private final double f;
+public class CrossTransformation extends AffineTransformation {
+
+    public CrossTransformation(double a, double b, double c, double d, double e, double f) {
+        super(a, b, c, d, e, f);
+    }
 
     @Override
-    public Point apply(Point point) {
-        double affineX = a * point.x() + b * point.y() + c;
-        double affineY = d * point.x() + e * point.y() + f;
-        double n = Math.sqrt(1 / Math.pow(affineX * affineX - affineY * affineY, 2));
+    protected Point transformPoint(Point point) {
+        double affineX = point.x();
+        double affineY = point.y();
+
+        double denominator = Math.pow(affineX * affineX - affineY * affineY, 2);
+        double n = Math.sqrt(1 / denominator);
 
         double newX = n * affineX;
         double newY = n * affineY;
