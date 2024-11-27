@@ -16,6 +16,7 @@ import backend.academy.flame.transformations.SpiralTransformation;
 import backend.academy.flame.transformations.SwirlTransformation;
 import backend.academy.flame.transformations.TangentTransfortmation;
 import backend.academy.flame.transformations.Transformation;
+import backend.academy.flame.transformations.VortexFlowerTransformation;
 import backend.academy.flame.transformations.WavesTransformation;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -61,38 +62,45 @@ public class FractalApp {
 
         // Ввод трансформаций
         List<Transformation> transformations = new ArrayList<>();
-        log.info("Введите трансформации: (1-Eyefish, 2-Heart, 3-Spiral, 4-Swirl, 5-Waves, 6-Tangent, 7-Cross, "
-            + "8-Hyperbolic, 9-Circular)");
+        log.info("Введите трансформации: (1-VortexFlower, 2-Eyefish, 3-Heart, 4-Spiral, 5-Swirl, 6-Waves, 7-Tangent, "
+            + "8-Cross, 9-Hyperbolic, 10-Circular)");
         String transformationsInput = scanner.nextLine();
         for (String trStr : transformationsInput.split(",")) {
             try {
                 int tr = Integer.parseInt(trStr.trim());
-                double[] coefficients = readCoefficients(scanner); // Считывание коэффициентов
-                switch (tr) {
-                    case 1 -> transformations.add(new EyefishTransformation(coefficients[0], coefficients[1],
-                        coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
-                    case 2 -> transformations.add(new HeartTransformation(coefficients[0], coefficients[1],
-                        coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
-                    case 3 -> transformations.add(new SpiralTransformation(coefficients[0], coefficients[1],
-                        coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
-                    case 4 -> transformations.add(new SwirlTransformation(coefficients[0], coefficients[1],
-                        coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
-                    case 5 -> transformations.add(new WavesTransformation(coefficients[0], coefficients[1],
-                        coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
-                    case 6 -> transformations.add(new TangentTransfortmation(coefficients[0], coefficients[1],
-                        coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
-                    case 7 -> transformations.add(new CrossTransformation(coefficients[0], coefficients[1],
-                        coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
-                    case 8 -> transformations.add(new HyperbolicTransformation(coefficients[0], coefficients[1],
-                        coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
-                    case 9 -> transformations.add(new CircularTransformation(coefficients[0], coefficients[1],
-                        coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
-                    default -> log.warn("Неизвестная трансформация: {}", tr);
+                if (tr == 1) {
+                    // Если выбран номер 1, вызываем метод для цветка без запроса коэффициентов
+                    transformations.add(readVariationOfFlower(scanner));
+                } else {
+                    // Для других трансформаций — запрашиваем коэффициенты
+                    double[] coefficients = readCoefficients(scanner);
+                    switch (tr) {
+                        case 2 -> transformations.add(new EyefishTransformation(coefficients[0], coefficients[1],
+                            coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
+                        case 3 -> transformations.add(new HeartTransformation(coefficients[0], coefficients[1],
+                            coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
+                        case 4 -> transformations.add(new SpiralTransformation(coefficients[0], coefficients[1],
+                            coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
+                        case 5 -> transformations.add(new SwirlTransformation(coefficients[0], coefficients[1],
+                            coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
+                        case 6 -> transformations.add(new WavesTransformation(coefficients[0], coefficients[1],
+                            coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
+                        case 7 -> transformations.add(new TangentTransfortmation(coefficients[0], coefficients[1],
+                            coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
+                        case 8 -> transformations.add(new CrossTransformation(coefficients[0], coefficients[1],
+                            coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
+                        case 9 -> transformations.add(new HyperbolicTransformation(coefficients[0], coefficients[1],
+                            coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
+                        case 10 -> transformations.add(new CircularTransformation(coefficients[0], coefficients[1],
+                            coefficients[2], coefficients[3], coefficients[4], coefficients[5]));
+                        default -> log.warn("Неизвестная трансформация: {}", tr);
+                    }
                 }
             } catch (NumberFormatException e) {
                 log.warn("Некорректный формат трансформации: {}", trStr);
             }
         }
+
 
         FractalImage canvas = FractalImage.create(width, height);
         FractalRenderer renderer = new FractalRenderer();
@@ -108,7 +116,7 @@ public class FractalApp {
             log.info("Многопоточная обработка заняла: {} мс", (endTimeMulti - startTimeMulti));
             // Пост-обработка (гамма-коррекция)
             log.info(CORRECTION);
-            ImageProcessor gammaProcessor = new GammaCorrection(2.2, 1);
+            ImageProcessor gammaProcessor = new GammaCorrection(2.2, 0.8);
             gammaProcessor.process(renderedImageMultiThreaded);
             // Сохранение изображения
             ImageUtils.save(renderedImageMultiThreaded, outputPath, ImageFormat.valueOf(format));
@@ -122,7 +130,7 @@ public class FractalApp {
             log.info("Однопоточная обработка заняла: {} мс", (endTime - startTime));
             // Пост-обработка (гамма-коррекция)
             log.info(CORRECTION);
-            ImageProcessor gammaProcessor = new GammaCorrection(2.2, 1);
+            ImageProcessor gammaProcessor = new GammaCorrection(0, 0);
             gammaProcessor.process(renderedImageSingleThreaded);
             // Сохранение изображения
             ImageUtils.save(renderedImageSingleThreaded, outputPath, ImageFormat.valueOf(format));
@@ -158,6 +166,7 @@ public class FractalApp {
                     log.warn("Значение должно быть положительным числом.");
                 }
             } catch (Exception e) {
+                log.warn("Значение должно быть числом.");
                 scanner.nextLine(); // Очистка некорректного ввода
             }
         }
@@ -223,5 +232,33 @@ public class FractalApp {
             }
         }
         return coefficients;
+    }
+
+    private static int readOneOrTwoOrThree(Scanner scanner) {
+        while (true) {
+            try {
+                int value = scanner.nextInt();
+                scanner.nextLine(); // Очистка после nextInt()
+                if (value == 1 || value == 2 || value == 3) {
+                    return value;
+                } else {
+                    log.warn("Значение должно быть: 1, 2 или 3.");
+                }
+            } catch (Exception e) {
+                scanner.nextLine(); // Очистка некорректного ввода
+            }
+        }
+    }
+
+    private static Transformation readVariationOfFlower(Scanner scanner) {
+        log.info("Какой цветок вы хотите вывести? (1-Стандартный, 2-С маленькими лепестками, 3-С широкими лепестками)");
+        int n = readOneOrTwoOrThree(scanner);
+        if (n == 1) {
+            return VortexFlowerTransformation.createDefault();
+        } else if (n == 2) {
+            return VortexFlowerTransformation.createFlowerWithSmallPetals();
+        } else {
+            return VortexFlowerTransformation.createFlowerWithWidePetals();
+        }
     }
 }
