@@ -115,7 +115,7 @@ public class FractalApp {
             log.info("Многопоточная обработка заняла: {} мс", (endTimeMulti - startTimeMulti));
             // Пост-обработка (гамма-коррекция)
             log.info(CORRECTION);
-            ImageProcessor gammaProcessor = new GammaCorrection(2.2, 0.8);
+            ImageProcessor gammaProcessor = new GammaCorrection(5, 5);
             gammaProcessor.process(renderedImageMultiThreaded);
             // Сохранение изображения
             ImageUtils.save(renderedImageMultiThreaded, outputPath, ImageFormat.valueOf(format));
@@ -129,7 +129,7 @@ public class FractalApp {
             log.info("Однопоточная обработка заняла: {} мс", (endTime - startTime));
             // Пост-обработка (гамма-коррекция)
             log.info(CORRECTION);
-            ImageProcessor gammaProcessor = new GammaCorrection(0, 0);
+            ImageProcessor gammaProcessor = new GammaCorrection(5, 5);
             gammaProcessor.process(renderedImageSingleThreaded);
             // Сохранение изображения
             ImageUtils.save(renderedImageSingleThreaded, outputPath, ImageFormat.valueOf(format));

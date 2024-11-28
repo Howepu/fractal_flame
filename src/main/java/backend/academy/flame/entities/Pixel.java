@@ -1,7 +1,7 @@
 package backend.academy.flame.entities;
 
 public record Pixel(int r, int g, int b, int hitCount) {
-    private static final int D = 255;
+    private static final int D = 256;
 
     public Pixel addColor(int r, int g, int b) {
         return new Pixel(
