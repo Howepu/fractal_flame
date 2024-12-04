@@ -1,15 +1,30 @@
 package backend.academy.flame.entities;
 
-public record Pixel(int r, int g, int b, int hitCount) {
-    private static final int D = 256;
+import lombok.Getter;
+import lombok.Setter;
 
-    public Pixel addColor(int r, int g, int b) {
-        return new Pixel(
-            Math.min(D, Math.max(0, this.r + r)),
-            Math.min(D, Math.max(0, this.g + g)),
-            Math.min(D, Math.max(0, this.b + b)),
-            this.hitCount + 1
-        );
+@Getter
+@Setter
+public class Pixel {
+    private int red, green, blue;
+    private boolean visited;
+    private int counter;
+    private double normal;
+
+    public Pixel() {
+        visited = false;
+        counter = 0;
+        normal = 0.0;
     }
 
+    public void setColor(int red, int green, int blue) {
+        this.blue = blue;
+        this.green = green;
+        this.red = red;
+        visited = true;
+    }
+
+    public void setAvg(int red, int green, int blue) {
+        setColor((this.red + red) / 2, (this.green + green) / 2, (this.blue + blue) / 2);
+    }
 }
