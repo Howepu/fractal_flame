@@ -1,32 +1,86 @@
 package backend.academy.flame.transformations;
 
 import backend.academy.flame.entities.Point;
+import backend.academy.flame.image.Colorable;
+import lombok.Getter;
+import java.util.Random;
 
-@SuppressWarnings("checkstyle:MagicNumber")
-public class CircularTransformation extends AffineTransformation {
 
-    public CircularTransformation(double a, double b, double c, double d, double e, double f) {
-        super(a, b, c, d, e, f);
+@Getter
+public class CircularTransformation implements Transformation, Colorable {
+    private double a, b, d, e, c, f;
+    private int red, green, blue;
+    private static final Random RANDOM = new Random();
+
+    public CircularTransformation() {
+        generateCoefficients();
+        this.red = RANDOM.nextInt(256);
+        this.green = RANDOM.nextInt(256);
+        this.blue = RANDOM.nextInt(256);
+
     }
 
-    @Override
-    protected Point transformPoint(Point point) {
-        // Входные координаты после аффинного преобразования
-        double affineX = point.x();
-        double affineY = point.y();
+    private void generateCoefficients() {
+        do {
+            this.a = randomInRange(-1, 1);
+            this.b = randomInRange(-1, 1);
+            this.d = randomInRange(-1, 1);
+            this.e = randomInRange(-1, 1);
+            this.c = randomInRange(-2, 2);
+            this.f = randomInRange(-2, 2);
+        } while (!isValid(a, b, d, e));
+    }
 
-        // Преобразование в полярные координаты
-        double r = Math.sqrt(affineX * affineX + affineY * affineY);
-        double theta = Math.atan2(affineY, affineX);
+    private boolean isValid(double a, double b, double d, double e) {
+        double condition1 = a * a + d * d;
+        double condition2 = b * b + e * e;
+        double determinant = a * e - b * d;
+        boolean condition3 = condition1 + condition2 < 1 + determinant * determinant;
+        return condition1 < 1 && condition2 < 1 && condition3;
+    }
+
+    private double randomInRange(double min, double max) {
+        return min + (max - min) * RANDOM.nextDouble();
+    }
+
+
+    @Override
+    public Point apply(Point point) {
+        double x = a * point.x() + b * point.y() + c;
+        double y = d * point.x() + e * point.y() + f;
+        return new Point(x,y);
+    }
+
+    @Override public Point apply(double x, double y) {
+        double newX = a * x + b * y+ c;
+        double newY = d * x + e * y + f;
+        double r = Math.sqrt(newX * newX + newX * newX);
+        double theta = Math.atan2(newX, newX);
 
         // Уникальная логика CircularTransformation
         double newR = r * Math.sin(theta * 3);
         double newTheta = theta + Math.log(r);
 
         // Преобразование обратно в декартовы координаты
-        double newX = newR * Math.cos(newTheta);
-        double newY = newR * Math.sin(newTheta);
+        newX = newR * Math.cos(newTheta);
+        newY = newR * Math.sin(newTheta);
 
         return new Point(newX, newY);
     }
+
+    @Override
+    public int getRed() {
+        return red;
+    }
+
+    @Override
+    public int getGreen() {
+        return green;
+    }
+
+    @Override
+    public int getBlue() {
+        return blue;
+    }
 }
+
