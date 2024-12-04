@@ -6,7 +6,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Pixel {
-    private int red, green, blue;
+    private int red;
+    private int green;
+    private int blue;
     private boolean visited;
     private int counter;
     private double normal;

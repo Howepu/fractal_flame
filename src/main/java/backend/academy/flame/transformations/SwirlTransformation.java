@@ -1,9 +1,8 @@
-//package backend.academy.flame.transformations;
-//
-//import backend.academy.flame.entities.Point;
-//
-//public class SwirlTransformation extends AffineTransformation {
-//
+package backend.academy.flame.transformations;
+
+
+public class SwirlTransformation {
+
 //    public SwirlTransformation(double a, double b, double c, double d, double e, double f) {
 //        super(a, b, c, d, e, f);
 //    }
@@ -22,4 +21,4 @@
 //    public Point apply(double newX, double newY) {
 //        return null;
 //    }
-//}
+}

@@ -1,9 +1,9 @@
-//package backend.academy.flame.transformations;
-//
-//import backend.academy.flame.entities.Point;
-//
-//public class SpiralTransformation extends AffineTransformation {
-//
+
+package backend.academy.flame.transformations;
+
+
+public class SpiralTransformation {
+
 //    public SpiralTransformation(double a, double b, double c, double d, double e, double f) {
 //        super(a, b, c, d, e, f);
 //    }
@@ -25,4 +25,4 @@
 //    public Point apply(double newX, double newY) {
 //        return null;
 //    }
-//}
+}

@@ -12,22 +12,24 @@ import backend.academy.flame.transformations.LinearTransformation;
 import backend.academy.flame.transformations.TangentTransformation;
 import backend.academy.flame.transformations.Transformation;
 import backend.academy.flame.transformations.WavesTransformation;
-import lombok.extern.slf4j.Slf4j;
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ForkJoinPool;
+import javax.imageio.ImageIO;
+import lombok.extern.slf4j.Slf4j;
 import static java.lang.Math.log10;
 
 @Slf4j
-@SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:ParameterAssignment"})
+@SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:ParameterAssignment", "checkstyle:ReturnCount",
+"checkstyle:NestedIfDepth"})
 public class FractalRenderer {
+
+    private FractalRenderer() {
+        throw new AssertionError("Не удается создать экземпляр служебного класса");
+    }
 
     private static final double X_MIN = -1.777;
     private static final double X_MAX = 1.777;
@@ -60,9 +62,9 @@ public class FractalRenderer {
         File outputFile = new File("output_image.png");
         try {
             ImageIO.write(image, "png", outputFile);
-            System.out.println("Изображение успешно сохранено: " + outputFile.getAbsolutePath());
+            log.info("Изображение успешно сохранено: {}", outputFile.getAbsolutePath());
         } catch (IOException e) {
-            System.err.println("Ошибка сохранения изображения: " + e.getMessage());
+            log.error("Ошибка сохранения изображения: {}", e.getMessage());
         }
     }
 
@@ -146,12 +148,12 @@ public class FractalRenderer {
         switch (tr) {
             case 1: return new EyefishTransformation();
             case 2: return new HeartTransformation();
-            case 5: return new WavesTransformation();
-            case 6: return new TangentTransformation();
-            case 7: return new CrossTransformation();
-            case 8: return new HyperbolicTransformation();
-            case 9: return new CircularTransformation();
-            default: return new EyefishTransformation();  // По умолчанию
+            case 3: return new WavesTransformation();
+            case 4: return new TangentTransformation();
+            case 5: return new CrossTransformation();
+            case 6: return new HyperbolicTransformation();
+            case 7: return new CircularTransformation();
+            default: return new LinearTransformation();  // По умолчанию
         }
     }
 

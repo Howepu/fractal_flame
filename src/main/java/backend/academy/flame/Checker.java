@@ -1,7 +1,6 @@
 package backend.academy.flame;
 
 import backend.academy.flame.image.ImageFormat;
-import backend.academy.flame.transformations.Transformation;
 import java.util.Scanner;
 import lombok.extern.slf4j.Slf4j;
 

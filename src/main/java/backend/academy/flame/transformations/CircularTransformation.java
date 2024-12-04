@@ -2,22 +2,29 @@ package backend.academy.flame.transformations;
 
 import backend.academy.flame.entities.Point;
 import backend.academy.flame.image.Colorable;
-import lombok.Getter;
 import java.util.Random;
+import lombok.Getter;
 
-
+@SuppressWarnings("checkstyle:MagicNumber")
 @Getter
 public class CircularTransformation implements Transformation, Colorable {
-    private double a, b, d, e, c, f;
-    private int red, green, blue;
     private static final Random RANDOM = new Random();
+
+    private double a;
+    private double b;
+    private double d;
+    private double e;
+    private double c;
+    private double f;
+    private int red;
+    private int green;
+    private int blue;
 
     public CircularTransformation() {
         generateCoefficients();
-        this.red = RANDOM.nextInt(256);
-        this.green = RANDOM.nextInt(256);
-        this.blue = RANDOM.nextInt(256);
-
+        this.red = RANDOM.nextInt(NUM);
+        this.green = RANDOM.nextInt(NUM);
+        this.blue = RANDOM.nextInt(NUM);
     }
 
     private void generateCoefficients() {
@@ -43,27 +50,28 @@ public class CircularTransformation implements Transformation, Colorable {
         return min + (max - min) * RANDOM.nextDouble();
     }
 
-
     @Override
     public Point apply(Point point) {
-        double x = a * point.x() + b * point.y() + c;
-        double y = d * point.x() + e * point.y() + f;
-        return new Point(x,y);
+        return apply(point.x(), point.y());
     }
 
-    @Override public Point apply(double x, double y) {
-        double newX = a * x + b * y+ c;
-        double newY = d * x + e * y + f;
-        double r = Math.sqrt(newX * newX + newX * newX);
-        double theta = Math.atan2(newX, newX);
+    @Override
+    public Point apply(double x, double y) {
+        // Линейное преобразование
+        double transformedX = a * x + b * y + c;
+        double transformedY = d * x + e * y + f;
+
+        // Преобразование в полярные координаты
+        double r = Math.sqrt(transformedX * transformedX + transformedY * transformedY);
+        double theta = Math.atan2(transformedY, transformedX);
 
         // Уникальная логика CircularTransformation
         double newR = r * Math.sin(theta * 3);
-        double newTheta = theta + Math.log(r);
+        double newTheta = theta + Math.log1p(r); // log1p для большей численной стабильности
 
         // Преобразование обратно в декартовы координаты
-        newX = newR * Math.cos(newTheta);
-        newY = newR * Math.sin(newTheta);
+        double newX = newR * Math.cos(newTheta);
+        double newY = newR * Math.sin(newTheta);
 
         return new Point(newX, newY);
     }
@@ -83,4 +91,3 @@ public class CircularTransformation implements Transformation, Colorable {
         return blue;
     }
 }
-

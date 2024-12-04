@@ -1,11 +1,8 @@
 package backend.academy.flame;
 
-import backend.academy.flame.transformations.Transformation;
 import backend.academy.flame.image.FractalRenderer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import lombok.extern.slf4j.Slf4j;
@@ -44,8 +41,6 @@ public class FractalApp {
         outputPath = Path.of(outputPath + "." + format.toLowerCase());
 
         // Ввод трансформаций
-
-        List<Transformation> transformations = new ArrayList<>();
 
         log.info("Введите трансформацию: (1-VortexFlower, 2-Eyefish, 3-Heart, 4-Spiral, 5-Swirl, 6-Waves, 7-Tangent, "
             + "8-Cross, 9-Hyperbolic, 10-Circular)");

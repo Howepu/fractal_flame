@@ -2,21 +2,28 @@ package backend.academy.flame.transformations;
 
 import backend.academy.flame.entities.Point;
 import backend.academy.flame.image.Colorable;
-import lombok.Getter;
 import java.util.Random;
+import lombok.Getter;
 
-
+@SuppressWarnings("checkstyle:MagicNumber")
 @Getter
 public class CrossTransformation implements Transformation, Colorable {
-    private double a, b, d, e, c, f;
-    private int red, green, blue;
+    private double a;
+    private double b;
+    private double d;
+    private double e;
+    private double c;
+    private double f;
+    private int red;
+    private int green;
+    private int blue;
     private static final Random RANDOM = new Random();
 
     public CrossTransformation() {
         generateCoefficients();
-        this.red = RANDOM.nextInt(256);
-        this.green = RANDOM.nextInt(256);
-        this.blue = RANDOM.nextInt(256);
+        this.red = RANDOM.nextInt(NUM);
+        this.green = RANDOM.nextInt(NUM);
+            this.blue = RANDOM.nextInt(NUM);
 
     }
 
@@ -48,11 +55,11 @@ public class CrossTransformation implements Transformation, Colorable {
     public Point apply(Point point) {
         double x = a * point.x() + b * point.y() + c;
         double y = d * point.x() + e * point.y() + f;
-        return new Point(x,y);
+        return new Point(x, y);
     }
 
     @Override public Point apply(double x, double y) {
-        double newX = a * x + b * y+ c;
+        double newX = a * x + b * y + c;
         double newY = d * x + e * y + f;
         double denominator = Math.pow(newX * newX - newY * newY, 2);
         double n = Math.sqrt(1 / denominator);
