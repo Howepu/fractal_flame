@@ -7,12 +7,12 @@ import java.util.Random;
 
 
 @Getter
-public class HyperbolicTransformation implements Transformation, Colorable {
+public class TangentTransformation implements Transformation, Colorable {
     private double a, b, d, e, c, f;
     private int red, green, blue;
     private static final Random RANDOM = new Random();
 
-    public HyperbolicTransformation() {
+    public TangentTransformation() {
         generateCoefficients();
         this.red = RANDOM.nextInt(256);
         this.green = RANDOM.nextInt(256);
@@ -54,10 +54,8 @@ public class HyperbolicTransformation implements Transformation, Colorable {
     @Override public Point apply(double x, double y) {
         double newX = a * x + b * y+ c;
         double newY = d * x + e * y + f;
-        double r = Math.sqrt(newX * newX + newY * newY);
-        double theta = Math.atan(newX / newY);
-        newX = Math.sin(theta) / r;
-        newY = r * Math.cos(theta);
+        newX = Math.sin(newX) / Math.cos(newY);
+        newY = Math.tan(newY);
         return new Point(newX, newY);
     }
 

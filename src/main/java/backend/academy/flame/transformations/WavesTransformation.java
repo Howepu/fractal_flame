@@ -1,28 +1,80 @@
 package backend.academy.flame.transformations;
 
 import backend.academy.flame.entities.Point;
-import lombok.AllArgsConstructor;
+import backend.academy.flame.image.Colorable;
+import lombok.Getter;
+import java.util.Random;
 
-@AllArgsConstructor
-@SuppressWarnings("checkstyle:MagicNumber")
-public class WavesTransformation implements Transformation {
 
-    private final double a;
-    private final double b;
-    private final double c;
-    private final double d;
-    private final double e;
-    private final double f;
+@Getter
+public class WavesTransformation implements Transformation, Colorable {
+    private double a, b, d, e, c, f;
+    private int red, green, blue;
+    private static final Random RANDOM = new Random();
+
+    public WavesTransformation() {
+        generateCoefficients();
+        this.red = RANDOM.nextInt(256);
+        this.green = RANDOM.nextInt(256);
+        this.blue = RANDOM.nextInt(256);
+
+    }
+
+    private void generateCoefficients() {
+        do {
+            this.a = randomInRange(-1, 1);
+            this.b = randomInRange(-1, 1);
+            this.d = randomInRange(-1, 1);
+            this.e = randomInRange(-1, 1);
+            this.c = randomInRange(-2, 2);
+            this.f = randomInRange(-2, 2);
+        } while (!isValid(a, b, d, e));
+    }
+
+    private boolean isValid(double a, double b, double d, double e) {
+        double condition1 = a * a + d * d;
+        double condition2 = b * b + e * e;
+        double determinant = a * e - b * d;
+        boolean condition3 = condition1 + condition2 < 1 + determinant * determinant;
+        return condition1 < 1 && condition2 < 1 && condition3;
+    }
+
+    private double randomInRange(double min, double max) {
+        return min + (max - min) * RANDOM.nextDouble();
+    }
+
 
     @Override
     public Point apply(Point point) {
-        double affineX = a * point.x() + b * point.y() + c;
-        double affineY = d * point.x() + e * point.y() + f;
+        double x = a * point.x() + b * point.y() + c;
+        double y = d * point.x() + e * point.y() + f;
+        return new Point(x,y);
+    }
 
+    @Override public Point apply(double x, double y) {
+        double newX = a * x + b * y+ c;
+        double newY = d * x + e * y + f;
+        double affineX = a * newX + b * newY + c;
+        double affineY = d * newX + e * newY + f;
         // Применяем формулы
-        double newX = affineX + 1 * Math.sin(affineY / 0.5 * 0.5);
-        double newY = affineY + 0.7 * Math.sin(affineX / 0.3 * 0.3);
-
+        newX = affineX + 1 * Math.sin(affineY / 0.5 * 0.5);
+        newY = affineY + 0.7 * Math.sin(affineX / 0.3 * 0.3);
         return new Point(newX, newY);
     }
+
+    @Override
+    public int getRed() {
+        return red;
+    }
+
+    @Override
+    public int getGreen() {
+        return green;
+    }
+
+    @Override
+    public int getBlue() {
+        return blue;
+    }
 }
+
