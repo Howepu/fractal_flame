@@ -7,7 +7,6 @@ import backend.academy.flame.transformations.CircularTransformation;
 import backend.academy.flame.transformations.CrossTransformation;
 import backend.academy.flame.transformations.EyefishTransformation;
 import backend.academy.flame.transformations.HeartTransformation;
-import backend.academy.flame.transformations.HyperbolicTransformation;
 import backend.academy.flame.transformations.LinearTransformation;
 import backend.academy.flame.transformations.TangentTransformation;
 import backend.academy.flame.transformations.Transformation;
@@ -151,7 +150,7 @@ public class FractalRenderer {
             case 3: return new WavesTransformation();
             case 4: return new TangentTransformation();
             case 5: return new CrossTransformation();
-            case 6: return new HyperbolicTransformation();
+            case 6: return new LinearTransformation();
             case 7: return new CircularTransformation();
             default: return new LinearTransformation();  // По умолчанию
         }
