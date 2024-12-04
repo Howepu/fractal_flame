@@ -1,98 +1,158 @@
 package backend.academy.flame.image;
 
+import backend.academy.flame.Checker;
 import backend.academy.flame.entities.Pixel;
 import backend.academy.flame.entities.Point;
-import backend.academy.flame.entities.Rect;
+import backend.academy.flame.transformations.CircularTransformation;
+import backend.academy.flame.transformations.CrossTransformation;
+import backend.academy.flame.transformations.EyefishTransformation;
+import backend.academy.flame.transformations.HeartTransformation;
+import backend.academy.flame.transformations.HyperbolicTransformation;
+import backend.academy.flame.transformations.LinearTransformation;
+import backend.academy.flame.transformations.TangentTransformation;
 import backend.academy.flame.transformations.Transformation;
+import backend.academy.flame.transformations.WavesTransformation;
+import lombok.extern.slf4j.Slf4j;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ForkJoinPool;
+import static java.lang.Math.log10;
 
+@Slf4j
 @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:ParameterAssignment"})
 public class FractalRenderer {
-    private static final Random RANDOM = new Random();
-    private static final int PIXEL = 256;
-    private static final int NUMBER = 100;
 
-    // Многопоточная версия рендеринга
-    public FractalImage renderMultithreaded(FractalImage canvas, Rect world, List<Transformation> transformations,
-        int samples, int iterations, int threads) throws InterruptedException {
-        ForkJoinPool forkJoinPool = new ForkJoinPool(threads);
-        ExecutorCompletionService<Void> completionService = new ExecutorCompletionService<>(forkJoinPool);
+    private static final double X_MIN = -1.777;
+    private static final double X_MAX = 1.777;
+    private static final double Y_MIN = -1;
+    private static final double Y_MAX = 1;
+    private static Pixel[][] pixels;
+    private static BufferedImage image;
+    private static Transformation[] linearTransformations;
+    private static Scanner scanner = new Scanner(System.in);
 
-        int samplesPerThread = samples / threads;
-        for (int t = 0; t < threads; t++) {
-            completionService.submit(() -> {
-                Random threadLocalRandom = new Random();
-                Point point;
-                for (int i = 0; i < samplesPerThread; i++) {
-                    point = randomPoint(world);
-                    processPoint(canvas, world, transformations, point, threadLocalRandom, iterations);
-                }
-                return null;
-            });
-        }
-
-        for (int t = 0; t < threads; t++) {
-            completionService.take();
-        }
-
-        forkJoinPool.shutdown();
-        return canvas;
-    }
 
     // Однопоточная версия рендеринга
-    public FractalImage renderSingleThreaded(FractalImage canvas, Rect world, List<Transformation> transformations,
-        int samples, int iterations) {
-        for (int i = 0; i < samples; i++) {
-            Point point = randomPoint(world);
-            processPoint(canvas, world, transformations, point, RANDOM, iterations);
+    public static void renderSingleThreaded(int samples, int iterations, int xRes, int yRes, Random random) {
+        Transformation transformation = null;
+
+        int tr = Checker.readPositiveInt(scanner, "Введите номер трансформации:");
+        linearTransformations = new Transformation[30];
+        Arrays.setAll(linearTransformations, i -> getRandomTransformation(tr));
+        pixels = new Pixel[xRes][yRes]; // Используем заданные размеры
+        for (int i = 0; i < xRes; i++) {
+            Arrays.setAll(pixels[i], j -> new Pixel());
         }
-        return canvas;
+        image = new BufferedImage(xRes, yRes, BufferedImage.TYPE_INT_ARGB);
+        image.setRGB(0, 0, xRes, yRes, processPoint(samples, iterations, xRes, yRes, random), 0, xRes);
+
+        // Применение гамма-коррекции
+        applyGammaCorrection(xRes, yRes, 2.2);
+
+
+        File outputFile = new File("output_image.png");
+        try {
+            ImageIO.write(image, "png", outputFile);
+            System.out.println("Изображение успешно сохранено: " + outputFile.getAbsolutePath());
+        } catch (IOException e) {
+            System.err.println("Ошибка сохранения изображения: " + e.getMessage());
+        }
+    }
+
+    // Метод для гамма-коррекции
+    private static void applyGammaCorrection(int xRes, int yRes, double gamma) {
+        double max = 0.0;
+
+        // Находим максимальное значение нормализованного яркости
+        for (int row = 0; row < xRes; row++) {
+            for (int col = 0; col < yRes; col++) {
+                Pixel pixel = pixels[row][col];
+                if (pixel.counter() != 0) {
+                    pixel.normal(log10(pixel.counter())); // Применяем нормализацию
+                    if (pixel.normal() > max) {
+                        max = pixel.normal();
+                    }
+                }
+            }
+        }
+
+        // Применяем гамма-коррекцию ко всем пикселям
+        for (int row = 0; row < xRes; row++) {
+            for (int col = 0; col < yRes; col++) {
+                Pixel pixel = pixels[row][col];
+                pixel.normal(pixel.normal() / max); // Нормализуем яркость
+
+                // Применяем гамма-коррекцию к цветам
+                pixel.red(clamp((int) (pixel.red() * Math.pow(pixel.normal(), 1.0 / gamma))));
+                pixel.green(clamp((int) (pixel.green() * Math.pow(pixel.normal(), 1.0 / gamma))));
+                pixel.blue(clamp((int) (pixel.blue() * Math.pow(pixel.normal(), 1.0 / gamma))));
+            }
+        }
+    }
+
+    // Метод для ограничения значений цвета в пределах от 0 до 255
+    private static int clamp(int value) {
+        return Math.min(255, Math.max(0, value));
     }
 
     // Общая логика обработки точки и обновления пикселя
-    private void processPoint(FractalImage canvas, Rect world, List<Transformation> transformations, Point point,
-        Random random, int iterations) {
-        for (int j = 20; j < iterations; j++) {
-            Transformation transformation = transformations.get(random.nextInt(transformations.size()));
-            point = transformation.apply(point);
-            if (!world.contains(point)) {
-                continue;
+    private static int[] processPoint(int samples, int iterations, int xRes, int yRes, Random random) {
+        int[] intPixel = new int[xRes * yRes];
+        double xRange = X_MAX - X_MIN;
+        double yRange = Y_MAX - Y_MIN;
+
+        for (int num = 0; num < samples; num++) {
+            double newX = X_MIN + xRange * random.nextDouble();
+            double newY = Y_MIN + yRange * random.nextDouble();
+
+            for (int step = -20; step < iterations; step++) {
+                int i = random.nextInt(linearTransformations.length);
+                Point point = linearTransformations[i].apply(newX, newY);
+
+                if (step >= 0 && point.x() >= X_MIN && point.x() <= X_MAX && point.y() >= Y_MIN && point.y() <= Y_MAX) {
+                    int x1 = (int) ((point.x() - X_MIN) / xRange * xRes);
+                    int y1 = (int) ((point.y() - Y_MIN) / yRange * yRes);
+
+                    if (x1 >= 0 && x1 < xRes && y1 >= 0 && y1 < yRes) {
+                        Pixel pixel = pixels[x1][y1];
+                        if (!pixel.visited()) {
+                            if (linearTransformations[i] instanceof Colorable colorable) {
+                                pixel.setColor(colorable.getRed(), colorable.getGreen(), colorable.getBlue());
+                            }
+                        }
+                    }
+                }
             }
+        }
 
-            // Корректное преобразование координат
-            int x = (int) ((point.x() - world.x()) / world.width() * canvas.width());
-            int y = (int) ((point.y() - world.y()) / world.height() * canvas.height());
-
-            if (canvas.contains(x, y)) {
-                // Плавное изменение цвета с учётом количества попаданий
-                int baseColorR = (int) (Math.min(PIXEL, point.x() * NUMBER));
-                int baseColorG = (int) (Math.min(PIXEL, point.y() * NUMBER));
-                int baseColorB = PIXEL - (int) (Math.min(PIXEL, (point.x() + point.y()) * 50));
-
-                Pixel currentPixel = canvas.pixel(x, y);
-
-                // Смешиваем текущий цвет с новым для создания плавных переходов
-                Pixel newPixel = currentPixel.addColor(baseColorR, baseColorG, baseColorB);
-
-                int additionalBrightness = Math.min(PIXEL, currentPixel.hitCount() * 10);
-                newPixel = new Pixel(
-                    Math.min(PIXEL, newPixel.r() + additionalBrightness),
-                    Math.min(PIXEL, newPixel.g() + additionalBrightness),
-                    Math.min(PIXEL, newPixel.b() + additionalBrightness),
-                    newPixel.hitCount()
-                );
-
-                canvas.setPixel(x, y, newPixel);
+        for (int y = 0; y < yRes; y++) {
+            for (int x = 0; x < xRes; x++) {
+                Pixel pixel = pixels[x][y];
+                intPixel[y * xRes + x] = (255 << 24) | (pixel.red() << 16) | (pixel.green() << 8) | pixel.blue();
             }
+        }
+        return intPixel;
+    }
+
+    private static Transformation getRandomTransformation(int tr) {
+
+        switch (tr) {
+            case 1: return new EyefishTransformation();
+            case 2: return new HeartTransformation();
+            case 5: return new WavesTransformation();
+            case 6: return new TangentTransformation();
+            case 7: return new CrossTransformation();
+            case 8: return new HyperbolicTransformation();
+            case 9: return new CircularTransformation();
+            default: return new EyefishTransformation();  // По умолчанию
         }
     }
 
-    private Point randomPoint(Rect world) {
-        double x = world.x() + RANDOM.nextDouble() * world.width();
-        double y = world.y() + RANDOM.nextDouble() * world.height();
-        return new Point(x, y);
-    }
 }
