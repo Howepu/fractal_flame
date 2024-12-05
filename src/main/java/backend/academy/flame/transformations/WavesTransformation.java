@@ -1,8 +1,6 @@
 package backend.academy.flame.transformations;
 
 import backend.academy.flame.entities.Point;
-import backend.academy.flame.image.Colorable;
-import java.util.Random;
 import lombok.Getter;
 
 @SuppressWarnings("checkstyle:MagicNumber")
