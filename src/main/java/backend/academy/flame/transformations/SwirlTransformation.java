@@ -2,20 +2,14 @@ package backend.academy.flame.transformations;
 
 import backend.academy.flame.entities.Point;
 
-@SuppressWarnings("checkstyle:AvoidNoArgumentSuperConstructorCall")
 public class SwirlTransformation extends AbstractTransformation {
-
-    public SwirlTransformation() {
-        super();
-    }
-
 
     @Override
     public Point apply(Point point) {
         Point transformedPoint = transformPoint(point.x(), point.y());
-        double newX = transformedPoint.x();
-        double newY = transformedPoint.y();
-        return new Point(newX, newY);
+        double newX2 = transformedPoint.x();
+        double newY2 = transformedPoint.y();
+        return new Point(newX2, newY2);
     }
 
     @Override

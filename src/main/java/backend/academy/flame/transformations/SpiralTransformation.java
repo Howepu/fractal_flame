@@ -8,9 +8,9 @@ public class SpiralTransformation extends AbstractTransformation {
     @Override
     public Point apply(Point point) {
         Point transformedPoint = transformPoint(point.x(), point.y());
-        double newX = transformedPoint.x();
-        double newY = transformedPoint.y();
-        return new Point(newX, newY);
+        double newX1 = transformedPoint.x();
+        double newY2 = transformedPoint.y();
+        return new Point(newX1, newY2);
     }
 
     @Override

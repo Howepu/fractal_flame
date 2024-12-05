@@ -21,7 +21,6 @@ public class EyeFishTransformation extends AbstractTransformation {
         double newY = transformedPoint.y();
         double r = Math.sqrt(newX * newX + newY * newY);
 
-        // Apply eyefish distortion
         newX = (2 / (r + 1)) * newX;
         newY = (2 / (r + 1)) * newY;
 
