@@ -8,6 +8,8 @@ import backend.academy.flame.transformations.CrossTransformation;
 import backend.academy.flame.transformations.EyefishTransformation;
 import backend.academy.flame.transformations.HeartTransformation;
 import backend.academy.flame.transformations.LinearTransformation;
+import backend.academy.flame.transformations.SpiralTransformation;
+import backend.academy.flame.transformations.SwirlTransformation;
 import backend.academy.flame.transformations.TangentTransformation;
 import backend.academy.flame.transformations.Transformation;
 import backend.academy.flame.transformations.WavesTransformation;
@@ -23,7 +25,7 @@ import static java.lang.Math.log10;
 
 @Slf4j
 @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:ParameterAssignment", "checkstyle:ReturnCount",
-"checkstyle:NestedIfDepth"})
+    "checkstyle:NestedIfDepth"})
 public class FractalRenderer {
 
     private FractalRenderer() {
@@ -55,7 +57,7 @@ public class FractalRenderer {
         image.setRGB(0, 0, xRes, yRes, processPoint(samples, iterations, xRes, yRes, random), 0, xRes);
 
         // Применение гамма-коррекции
-        applyGammaCorrection(xRes, yRes, 2.2);
+        applyGammaCorrection(xRes, yRes, 0.8);
 
 
         File outputFile = new File("output_image.png");
@@ -152,6 +154,8 @@ public class FractalRenderer {
             case 5: return new CrossTransformation();
             case 6: return new LinearTransformation();
             case 7: return new CircularTransformation();
+            case 8: return new SwirlTransformation();
+            case 9: return new SpiralTransformation();
             default: return new LinearTransformation();  // По умолчанию
         }
     }

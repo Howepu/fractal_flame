@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @SuppressWarnings({"checkstyle:UncommentedMain", "checkstyle:MagicNumber"})
 public class FractalApp {
-    private static final int SAMPLES = 100000;
+    private static final int SAMPLES = 400000;
     private static final int THREADS = 4;
     private static final String CORRECTION = "Применяем гамма-коррекцию к изображению...";
     private static final Random RANDOM = new Random();
@@ -20,7 +20,7 @@ public class FractalApp {
     }
 
     public static void main(String[] args) throws Exception {
-//        logSystemConfiguration(); // Вывод конфигурации системы
+        logSystemConfiguration(); // Вывод конфигурации системы
 
         log.info("Используется {} потока", THREADS);
 
@@ -42,8 +42,8 @@ public class FractalApp {
 
         // Ввод трансформаций
 
-        log.info("Введите трансформацию: (1-VortexFlower, 2-Eyefish, 3-Heart, 4-Spiral, 5-Swirl, 6-Waves, 7-Tangent, "
-            + "8-Cross, 9-Hyperbolic, 10-Circular)");
+        log.info("Введите трансформацию: (1-Eyefish, 2-Heart, 3-Waves, 4-Tangent, 5-Cross, 6-Linear, 7-Circular, "
+            + "8-Swirl, 9-Spiral)");
 
 //        int tr = Checker.readPositiveInt(scanner, "Введите номер трансформации:");
 //
@@ -102,18 +102,19 @@ public class FractalApp {
 //        log.info("Программа завершена. Выход.");
 //    }
 
-//        private static void logSystemConfiguration() {
-//            Runtime runtime = Runtime.getRuntime();
-//
-//            log.info("=== Конфигурация системы ===");
-//            log.info("Операционная система: {} {}", System.getProperty("os.name"), System.getProperty("os.version"));
-//            log.info("Архитектура процессора: {}", System.getProperty("os.arch"));
-//            log.info("Ядра процессора (доступные): {}", runtime.availableProcessors());
-//            log.info("Объем памяти (максимум): {} MB", runtime.maxMemory() / (1024 * 1024));
-//            log.info("Объем памяти (всего): {} MB", runtime.totalMemory() / (1024 * 1024));
-//            log.info("Объем свободной памяти: {} MB", runtime.freeMemory() / (1024 * 1024));
-//            log.info("=============================");
-//        }
+    }
+
+    private static void logSystemConfiguration() {
+        Runtime runtime = Runtime.getRuntime();
+
+        log.info("=== Конфигурация системы ===");
+        log.info("Операционная система: {} {}", System.getProperty("os.name"), System.getProperty("os.version"));
+        log.info("Архитектура процессора: {}", System.getProperty("os.arch"));
+        log.info("Ядра процессора (доступные): {}", runtime.availableProcessors());
+        log.info("Объем памяти (максимум): {} MB", runtime.maxMemory() / (1024 * 1024));
+        log.info("Объем памяти (всего): {} MB", runtime.totalMemory() / (1024 * 1024));
+        log.info("Объем свободной памяти: {} MB", runtime.freeMemory() / (1024 * 1024));
+        log.info("=============================");
     }
 
 
