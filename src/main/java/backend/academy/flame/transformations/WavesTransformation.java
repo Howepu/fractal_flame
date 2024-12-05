@@ -3,7 +3,7 @@ package backend.academy.flame.transformations;
 import backend.academy.flame.entities.Point;
 import lombok.Getter;
 
-@SuppressWarnings("checkstyle:MagicNumber")
+@SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:UniqueProperties"})
 @Getter
 public class WavesTransformation extends AbstractTransformation {
 

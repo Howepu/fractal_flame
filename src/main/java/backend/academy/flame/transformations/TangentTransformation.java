@@ -2,7 +2,7 @@ package backend.academy.flame.transformations;
 
 import backend.academy.flame.entities.Point;
 
-@SuppressWarnings("checkstyle:AvoidNoArgumentSuperConstructorCall")
+@SuppressWarnings({"checkstyle:AvoidNoArgumentSuperConstructorCall", "checkstyle:UniqueProperties"})
 public class TangentTransformation extends AbstractTransformation {
 
     @Override
