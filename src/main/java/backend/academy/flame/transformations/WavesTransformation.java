@@ -14,7 +14,6 @@ public class WavesTransformation extends AbstractTransformation {
         Point transformedPoint = transformPoint(point.x(), point.y());
         double newX = transformedPoint.x();
         double newY = transformedPoint.y();
-
         return new Point(newX, newY);
     }
 

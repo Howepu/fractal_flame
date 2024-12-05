@@ -5,38 +5,25 @@ import backend.academy.flame.entities.Point;
 @SuppressWarnings("checkstyle:AvoidNoArgumentSuperConstructorCall")
 public class SwirlTransformation extends AbstractTransformation {
 
-    public SwirlTransformation() {
-        super();
-    }
 
     @Override
     public Point apply(Point point) {
-        // Выполняем аффинное преобразование
-        double x = a() * point.x() + b() * point.y() + c();
-        double y = d() * point.x() + e() * point.y() + f();
-
-        // Рассчитываем радиус
-        double r = Math.sqrt(x * x + y * y);
-
-        // Применяем эффект вихря
-        double newX = x * Math.sin(r * r) - y * Math.cos(r * r);
-        double newY = x * Math.cos(r * r) + y * Math.sin(r * r);
-
+        Point transformedPoint = transformPoint(point.x(), point.y());
+        double newX = transformedPoint.x();
+        double newY = transformedPoint.y();
         return new Point(newX, newY);
     }
 
     @Override
     public Point apply(double x, double y) {
-        // Выполняем аффинное преобразование
-        double affineX = a() * x + b() * y + c();
-        double affineY = d() * x + e() * y + f();
+        Point transformedPoint = transformPoint(x, y);
+        double newX = transformedPoint.x();
+        double newY = transformedPoint.y();
 
-        // Рассчитываем радиус
-        double r = Math.sqrt(affineX * affineX + affineY * affineY);
+        double r = Math.sqrt(newX * newX + newY * newY);
 
-        // Применяем эффект вихря
-        double newX = affineX * Math.sin(r * r) - affineY * Math.cos(r * r);
-        double newY = affineX * Math.cos(r * r) + affineY * Math.sin(r * r);
+        newX = newX * Math.sin(r * r) - newY * Math.cos(r * r);
+        newY = newX * Math.cos(r * r) + newY * Math.sin(r * r);
 
         return new Point(newX, newY);
     }
