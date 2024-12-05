@@ -5,7 +5,7 @@ import backend.academy.flame.entities.Pixel;
 import backend.academy.flame.entities.Point;
 import backend.academy.flame.transformations.CircularTransformation;
 import backend.academy.flame.transformations.CrossTransformation;
-import backend.academy.flame.transformations.EyefishTransformation;
+import backend.academy.flame.transformations.EyeFishTransformation;
 import backend.academy.flame.transformations.HeartTransformation;
 import backend.academy.flame.transformations.LinearTransformation;
 import backend.academy.flame.transformations.SpiralTransformation;
@@ -147,7 +147,7 @@ public class FractalRenderer {
     private static Transformation getRandomTransformation(int tr) {
 
         switch (tr) {
-            case 1: return new EyefishTransformation();
+            case 1: return new EyeFishTransformation();
             case 2: return new HeartTransformation();
             case 3: return new WavesTransformation();
             case 4: return new TangentTransformation();

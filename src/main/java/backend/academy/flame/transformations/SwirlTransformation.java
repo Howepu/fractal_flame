@@ -5,6 +5,10 @@ import backend.academy.flame.entities.Point;
 @SuppressWarnings("checkstyle:AvoidNoArgumentSuperConstructorCall")
 public class SwirlTransformation extends AbstractTransformation {
 
+    public SwirlTransformation() {
+        super();
+    }
+
 
     @Override
     public Point apply(Point point) {
