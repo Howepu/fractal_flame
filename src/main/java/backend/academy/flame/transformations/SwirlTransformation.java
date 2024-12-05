@@ -1,24 +1,43 @@
 package backend.academy.flame.transformations;
 
+import backend.academy.flame.entities.Point;
 
-public class SwirlTransformation {
+@SuppressWarnings("checkstyle:AvoidNoArgumentSuperConstructorCall")
+public class SwirlTransformation extends AbstractTransformation {
 
-//    public SwirlTransformation(double a, double b, double c, double d, double e, double f) {
-//        super(a, b, c, d, e, f);
-//    }
-//
-//    @Override
-//    protected Point transformPoint(Point point) {
-//        double affineX = point.x();
-//        double affineY = point.y();
-//        double r = Math.sqrt(affineX * affineX + affineY * affineY);
-//        double newX = affineX * Math.sin(Math.pow(r, 2)) - affineY * Math.cos(Math.pow(r, 2));
-//        double newY = affineX * Math.cos(Math.pow(r, 2)) + affineY * Math.sin(Math.pow(r, 2));
-//        return new Point(newX, newY);
-//    }
-//
-//    @Override
-//    public Point apply(double newX, double newY) {
-//        return null;
-//    }
+    public SwirlTransformation() {
+        super();
+    }
+
+    @Override
+    public Point apply(Point point) {
+        // Выполняем аффинное преобразование
+        double x = a() * point.x() + b() * point.y() + c();
+        double y = d() * point.x() + e() * point.y() + f();
+
+        // Рассчитываем радиус
+        double r = Math.sqrt(x * x + y * y);
+
+        // Применяем эффект вихря
+        double newX = x * Math.sin(r * r) - y * Math.cos(r * r);
+        double newY = x * Math.cos(r * r) + y * Math.sin(r * r);
+
+        return new Point(newX, newY);
+    }
+
+    @Override
+    public Point apply(double x, double y) {
+        // Выполняем аффинное преобразование
+        double affineX = a() * x + b() * y + c();
+        double affineY = d() * x + e() * y + f();
+
+        // Рассчитываем радиус
+        double r = Math.sqrt(affineX * affineX + affineY * affineY);
+
+        // Применяем эффект вихря
+        double newX = affineX * Math.sin(r * r) - affineY * Math.cos(r * r);
+        double newY = affineX * Math.cos(r * r) + affineY * Math.sin(r * r);
+
+        return new Point(newX, newY);
+    }
 }

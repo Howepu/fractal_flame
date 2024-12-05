@@ -1,13 +1,15 @@
 package backend.academy.flame.transformations;
 
-import backend.academy.flame.entities.Point;
 import backend.academy.flame.image.Colorable;
 import java.util.Random;
 import lombok.Getter;
 
 @SuppressWarnings("checkstyle:MagicNumber")
 @Getter
-public class HyperbolicTransformation implements Transformation, Colorable {
+public abstract class AbstractTransformation implements Transformation, Colorable {
+    private static final Random RANDOM = new Random();
+    private static final int NUM = 256;
+
     private double a;
     private double b;
     private double d;
@@ -17,17 +19,15 @@ public class HyperbolicTransformation implements Transformation, Colorable {
     private int red;
     private int green;
     private int blue;
-    private static final Random RANDOM = new Random();
 
-    public HyperbolicTransformation() {
+    public AbstractTransformation() {
         generateCoefficients();
         this.red = RANDOM.nextInt(NUM);
         this.green = RANDOM.nextInt(NUM);
         this.blue = RANDOM.nextInt(NUM);
-
     }
 
-    private void generateCoefficients() {
+    protected void generateCoefficients() {
         do {
             this.a = randomInRange(-1, 1);
             this.b = randomInRange(-1, 1);
@@ -38,7 +38,7 @@ public class HyperbolicTransformation implements Transformation, Colorable {
         } while (!isValid(a, b, d, e));
     }
 
-    private boolean isValid(double a, double b, double d, double e) {
+    protected boolean isValid(double a, double b, double d, double e) {
         double condition1 = a * a + d * d;
         double condition2 = b * b + e * e;
         double determinant = a * e - b * d;
@@ -48,24 +48,6 @@ public class HyperbolicTransformation implements Transformation, Colorable {
 
     private double randomInRange(double min, double max) {
         return min + (max - min) * RANDOM.nextDouble();
-    }
-
-
-    @Override
-    public Point apply(Point point) {
-        double x = a * point.x() + b * point.y() + c;
-        double y = d * point.x() + e * point.y() + f;
-        return new Point(x, y);
-    }
-
-    @Override public Point apply(double x, double y) {
-        double newX = a * x + b * y + c;
-        double newY = d * x + e * y + f;
-        double r = Math.sqrt(newX * newX + newY * newY);
-        double theta = Math.atan(newX / newY);
-        newX = Math.sin(theta) / r;
-        newY = r * Math.cos(theta);
-        return new Point(newX, newY);
     }
 
     @Override
@@ -83,4 +65,3 @@ public class HyperbolicTransformation implements Transformation, Colorable {
         return blue;
     }
 }
-
