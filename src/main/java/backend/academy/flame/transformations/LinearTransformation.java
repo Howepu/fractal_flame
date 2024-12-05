@@ -2,7 +2,10 @@ package backend.academy.flame.transformations;
 
 import backend.academy.flame.entities.Point;
 
+@SuppressWarnings("checkstyle:AvoidNoArgumentSuperConstructorCall")
 public class LinearTransformation extends AbstractTransformation {
+
+
     @Override
     public Point apply(Point point) {
         Point transformedPoint = transformPoint(point.x(), point.y());

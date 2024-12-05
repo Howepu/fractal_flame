@@ -2,6 +2,7 @@ package backend.academy.flame.transformations;
 
 import backend.academy.flame.entities.Point;
 
+@SuppressWarnings("checkstyle:AvoidNoArgumentSuperConstructorCall")
 public class CrossTransformation extends AbstractTransformation {
     @Override
     public Point apply(Point point) {

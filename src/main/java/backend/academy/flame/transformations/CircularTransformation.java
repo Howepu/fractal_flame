@@ -2,6 +2,7 @@ package backend.academy.flame.transformations;
 
 import backend.academy.flame.entities.Point;
 
+
 @SuppressWarnings("checkstyle:MagicNumber")
 public class CircularTransformation extends AbstractTransformation {
     @Override

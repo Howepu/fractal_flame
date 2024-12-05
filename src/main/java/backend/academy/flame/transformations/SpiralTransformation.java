@@ -5,10 +5,6 @@ import backend.academy.flame.entities.Point;
 @SuppressWarnings("checkstyle:AvoidNoArgumentSuperConstructorCall")
 public class SpiralTransformation extends AbstractTransformation {
 
-    public SpiralTransformation() {
-        super();
-    }
-
     @Override
     public Point apply(Point point) {
         Point transformedPoint = transformPoint(point.x(), point.y());
