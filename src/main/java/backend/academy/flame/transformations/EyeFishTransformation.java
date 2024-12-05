@@ -3,7 +3,7 @@ package backend.academy.flame.transformations;
 import backend.academy.flame.entities.Point;
 
 
-@SuppressWarnings("checkstyle:UniqueProperties")
+@SuppressWarnings("PMD.CPD")
 public class EyeFishTransformation extends AbstractTransformation {
 
     @Override
