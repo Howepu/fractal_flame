@@ -1,5 +1,6 @@
 package backend.academy.flame.transformations;
 
+import backend.academy.flame.entities.Point;
 import backend.academy.flame.image.Colorable;
 import java.util.Random;
 import lombok.Getter;
@@ -48,6 +49,12 @@ public abstract class AbstractTransformation implements Transformation, Colorabl
 
     private double randomInRange(double min, double max) {
         return min + (max - min) * RANDOM.nextDouble();
+    }
+
+    protected Point transformPoint(double x, double y) {
+        double newX = a() * x + b() * y + c();
+        double newY = d() * x + e() * y + f();
+        return new Point(newX, newY);
     }
 
     @Override

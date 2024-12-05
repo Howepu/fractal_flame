@@ -11,15 +11,23 @@ public class EyefishTransformation extends AbstractTransformation {
 
     @Override
     public Point apply(Point point) {
-        double x = a() * point.x() + b() * point.y() + c();
-        double y = d() * point.x() + e() * point.y() + f();
-        return new Point(x, y);
+        Point transformedPoint = transformPoint(point.x(), point.y());
+        double newX = transformedPoint.x();
+        double newY = transformedPoint.y();
+        double r = Math.sqrt(newX * newX + newY * newY);
+
+        // Apply eyefish distortion
+        newX = (2 / (r + 1)) * newX;
+        newY = (2 / (r + 1)) * newY;
+
+        return new Point(newX, newY);
     }
 
     @Override
     public Point apply(double x, double y) {
-        double newX = a() * x + b() * y + c();
-        double newY = d() * x + e() * y + f();
+        Point transformedPoint = transformPoint(x, y);
+        double newX = transformedPoint.x();
+        double newY = transformedPoint.y();
         double r = Math.sqrt(newX * newX + newY * newY);
 
         // Apply eyefish distortion
