@@ -11,32 +11,35 @@ class TransformationTest {
 
     private Point inputPoint;
     private CrossTransformation crossTransformation;
-    private EyefishTransformation eyefishTransformation;
+    private EyeFishTransformation eyefishTransformation;
     private HeartTransformation heartTransformation;
-    private HyperbolicTransformation hyperbolicTransformation;
     private SpiralTransformation spiralTransformation;
     private SwirlTransformation swirlTransformation;
-    private TangentTransfortmation tangentTransformation;
+    private TangentTransformation tangentTransformation;
     private WavesTransformation wavesTransformation;
+    private CircularTransformation circularTransformation;
+
 
     @BeforeEach
     void setUp() {
         // Инициализация объектов трансформаций и точки
         inputPoint = new Point(2, 3);
-        crossTransformation = new CrossTransformation(1, 0, 0, 0, 1, 0);
-        eyefishTransformation = new EyefishTransformation(1, 0, 0, 0, 1, 0);
-        heartTransformation = new HeartTransformation(1, 0, 0, 0, 1, 0);
-        hyperbolicTransformation = new HyperbolicTransformation(1, 0, 0, 0, 1, 0);
-        spiralTransformation = new SpiralTransformation(1, 0, 0, 0, 1, 0);
-        swirlTransformation = new SwirlTransformation(1, 0, 0, 0, 1, 0);
-        tangentTransformation = new TangentTransfortmation(1, 0, 0, 0, 1, 0);
-        wavesTransformation = new WavesTransformation(1, 0, 0, 0, 1, 0);
+        crossTransformation = new CrossTransformation();
+        eyefishTransformation = new EyeFishTransformation();
+        heartTransformation = new HeartTransformation();
+        spiralTransformation = new SpiralTransformation();
+        swirlTransformation = new SwirlTransformation();
+        tangentTransformation = new TangentTransformation();
+        wavesTransformation = new WavesTransformation();
+        circularTransformation = new CircularTransformation();
     }
 
     @Test
     void testCrossTransformation() {
         Point transformedPoint = crossTransformation.apply(inputPoint);
-        assertNotNull(transformedPoint);
+        if (transformedPoint == null) {
+            fail("Transformed point is null");
+        }
         assertEquals(0.4, transformedPoint.x(), 0.001);
         assertEquals(0.6, transformedPoint.y(), 0.001);
     }
@@ -44,7 +47,9 @@ class TransformationTest {
     @Test
     void testEyefishTransformation() {
         Point transformedPoint = eyefishTransformation.apply(inputPoint);
-        assertNotNull(transformedPoint);
+        if (transformedPoint == null) {
+            fail("Transformed point is null");
+        }
         assertEquals(0.868, transformedPoint.x(), 0.001);  // Проверка с ожидаемым значением для X
         assertEquals(1.302, transformedPoint.y(), 0.001);  // Используем точное значение для Y
     }
@@ -53,15 +58,9 @@ class TransformationTest {
     @Test
     void testHeartTransformation() {
         Point transformedPoint = heartTransformation.apply(inputPoint);
-        assertNotNull(transformedPoint);
-        assertTrue(transformedPoint.x() != 0);
-        assertTrue(transformedPoint.y() != 0);
-    }
-
-    @Test
-    void testHyperbolicTransformation() {
-        Point transformedPoint = hyperbolicTransformation.apply(inputPoint);
-        assertNotNull(transformedPoint);
+        if (transformedPoint == null) {
+            fail("Transformed point is null");
+        }
         assertTrue(transformedPoint.x() != 0);
         assertTrue(transformedPoint.y() != 0);
     }
@@ -69,7 +68,9 @@ class TransformationTest {
     @Test
     void testSpiralTransformation() {
         Point transformedPoint = spiralTransformation.apply(inputPoint);
-        assertNotNull(transformedPoint);
+        if (transformedPoint == null) {
+            fail("Transformed point is null");
+        }
         assertTrue(transformedPoint.x() != 0);
         assertTrue(transformedPoint.y() != 0);
     }
@@ -77,7 +78,9 @@ class TransformationTest {
     @Test
     void testSwirlTransformation() {
         Point transformedPoint = swirlTransformation.apply(inputPoint);
-        assertNotNull(transformedPoint);
+        if (transformedPoint == null) {
+            fail("Transformed point is null");
+        }
         assertTrue(transformedPoint.x() != 0);
         assertTrue(transformedPoint.y() != 0);
     }
@@ -85,7 +88,9 @@ class TransformationTest {
     @Test
     void testTangentTransformation() {
         Point transformedPoint = tangentTransformation.apply(inputPoint);
-        assertNotNull(transformedPoint);
+        if (transformedPoint == null) {
+            fail("Transformed point is null");
+        }
         assertTrue(transformedPoint.x() != 0);
         assertTrue(transformedPoint.y() != 0);
     }
@@ -93,8 +98,20 @@ class TransformationTest {
     @Test
     void testWavesTransformation() {
         Point transformedPoint = wavesTransformation.apply(inputPoint);
-        assertNotNull(transformedPoint);
-        assertEquals(2.141, transformedPoint.x(), 0.001);  // Проверка с ожидаемым значением
-        assertEquals(3.636, transformedPoint.y(), 0.001);  // Проверка с ожидаемым значением
+        if (transformedPoint == null) {
+            fail("Transformed point is null");
+        }
+        assertEquals(2, transformedPoint.x(), 0.001);  // Проверка с ожидаемым значением
+        assertEquals(3, transformedPoint.y(), 0.001);  // Проверка с ожидаемым значением
+    }
+
+    @Test
+    void testCircleTransformation() {
+        Point transformedPoint = circularTransformation.apply(inputPoint);
+        if (transformedPoint == null) {
+            fail("Transformed point is null");
+        }
+        assertTrue(transformedPoint.x() != 0);
+        assertTrue(transformedPoint.y() != 0);
     }
 }

@@ -1,50 +1,60 @@
 //package backend.academy.flame;
 //
-//import backend.academy.flame.entities.Rect;
-//import backend.academy.flame.image.FractalImage;
 //import backend.academy.flame.image.FractalRenderer;
-//import backend.academy.flame.transformations.*;
-//
 //import org.junit.jupiter.api.Test;
-//
-//import java.util.List;
-//
 //import static org.junit.jupiter.api.Assertions.*;
 //
 //class FractalRendererTest {
 //
+//    private static final int WIDTH = 1920; // Пример ширины изображения
+//    private static final int HEIGHT = 1080; // Пример высоты изображения
+//    private static final int ITERATIONS = 1_000_000; // Пример количества итераций
+//    private static final int RUNS = 5; // Количество запусков для усреднения времени выполнения
+//    private static final int SAMPLES = 30;
+//
 //    @Test
-//    void testRenderPerformance() throws InterruptedException {
-//        int width = 1920;
-//        int height = 1080;
-//        int samples = 10000;
-//        int iterations = 1000;
-//        int threads = 4;
+//    void testSingleThreadedPerformance() {
+//        double averageTime = measureAverageExecutionTime(() ->
+//            FractalRenderer.processPointsSingleThreaded(SAMPLES, ITERATIONS, WIDTH, HEIGHT), RUNS);
 //
-//        Rect world = new Rect(-1, -1, 2, 2);
-//        FractalImage canvasSingle = FractalImage.create(width, height);
-//        FractalImage canvasMulti = FractalImage.create(width, height);
+//        System.out.println("Среднее время выполнения (однопоточная версия): " + averageTime + " секунд");
+//        assertTrue(averageTime > 0, "Время выполнения должно быть больше нуля");
+//    }
 //
-//        List<Transformation> transformations = List.of(
-//            new SwirlTransformation(1, 0, 0, 0, 1, 0),
-//            new HeartTransformation(1, 0, 0, 0, 1, 0),
-//            new EyefishTransformation(1, 0, 0, 0, 1, 0)
-//        );
+//    @Test
+//    void testMultiThreadedPerformance() {
+//        double averageTime = measureAverageExecutionTime(() ->
+//            FractalRenderer.processPointsMultithreaded(SAMPLES, ITERATIONS, WIDTH, HEIGHT), RUNS);
 //
-//        FractalRenderer renderer = new FractalRenderer();
+//        System.out.println("Среднее время выполнения (многопоточная версия): " + averageTime + " секунд");
+//        assertTrue(averageTime > 0, "Время выполнения должно быть больше нуля");
+//    }
 //
-//        long startSingle = System.nanoTime();
-//        renderer.renderSingleThreaded(canvasSingle, world, transformations, samples, iterations);
-//        long durationSingle = System.nanoTime() - startSingle;
+//    @Test
+//    void testPerformanceComparison() {
+//        double singleThreadedTime = measureAverageExecutionTime(() ->
+//            FractalRenderer.processPointsSingleThreaded(SAMPLES, ITERATIONS, WIDTH, HEIGHT), RUNS);
 //
-//        long startMulti = System.nanoTime();
-//        renderer.renderMultithreaded(canvasMulti, world, transformations, samples, iterations, threads);
-//        long durationMulti = System.nanoTime() - startMulti;
+//        double multiThreadedTime = measureAverageExecutionTime(() ->
+//            FractalRenderer.processPointsMultithreaded(SAMPLES, ITERATIONS, WIDTH, HEIGHT), RUNS);
 //
-//        System.out.printf("Однопоточная обработка: %d ms%n", durationSingle / 1000000);
-//        System.out.printf("Многопоточная обработка: %d ms%n", durationMulti / 1000000);
+//        System.out.println("Однопоточная версия: " + singleThreadedTime + " секунд");
+//        System.out.println("Многопоточная версия: " + multiThreadedTime + " секунд");
 //
-//        assertTrue(durationMulti < durationSingle, "Многопоточная обработка должна быть быстрее");
+//        assertTrue(multiThreadedTime < singleThreadedTime, "Многопоточная версия должна работать быстрее однопоточной");
+//    }
+//
+//    private double measureAverageExecutionTime(Runnable task, int runs) {
+//        double totalTime = 0;
+//
+//        for (int i = 0; i < runs; i++) {
+//            long startTime = System.nanoTime();
+//            task.run();
+//            long endTime = System.nanoTime();
+//
+//            totalTime += (endTime - startTime) / 1_000_000_000.0; // Перевод в секунды
+//        }
+//
+//        return totalTime / runs;
 //    }
 //}
-//
