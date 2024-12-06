@@ -2,27 +2,28 @@ package backend.academy.flame.transformations;
 
 import backend.academy.flame.entities.Point;
 
-@SuppressWarnings({"checkstyle:AvoidNoArgumentSuperConstructorCall", "checkstyle:UniqueProperties"})
-public class CrossTransformation extends AbstractTransformation {
+public class CrossTransformation implements Transformation {
+
     @Override
     public Point apply(Point point) {
-        Point transformedPoint = transformPoint(point.x(), point.y());
-        double newX = transformedPoint.x();
-        double newY = transformedPoint.y();
-
-        return new Point(newX, newY);
+        return null;
     }
 
     @Override
     public Point apply(double x, double y) {
-        Point transformedPoint = transformPoint(x, y);
-        double newX = transformedPoint.x();
-        double newY = transformedPoint.y();
-        double denominator = Math.pow(newX * newX - newY * newY, 2);
-        double n = Math.sqrt(1 / denominator);
+        // Вычисляем знаменатель
+        double denominator = Math.pow(x * x - y * y, 2); // (x^2 - y^2)^2
+        if (denominator == 0) {
+            // Обработка деления на 0
+            return new Point(0, 0);
+        }
 
-        newX = n * newX;
-        newY = n * newY;
+        // Вычисляем масштабирующий фактор
+        double factor = Math.sqrt(1 / denominator);
+
+        // Новые координаты
+        double newX = factor * x;
+        double newY = factor * y;
 
         return new Point(newX, newY);
     }

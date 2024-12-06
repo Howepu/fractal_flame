@@ -5,20 +5,18 @@ import lombok.Getter;
 
 @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:UniqueProperties"})
 @Getter
-public class WavesTransformation extends AbstractTransformation {
+public class WavesTransformation implements Transformation {
 
     @Override
     public Point apply(Point point) {
-        Point transformedPoint = transformPoint(point.x(), point.y());
-        double newX = transformedPoint.x();
-        double newY = transformedPoint.y();
+        double newX = point.x();
+        double newY = point.y();
         return new Point(newX, newY);
     }
 
     @Override public Point apply(double x, double y) {
-        Point transformedPoint = transformPoint(x, y);
-        double newX = transformedPoint.x();
-        double newY = transformedPoint.y();
+        double newX = x;
+        double newY = y;
         // Применяем формулы
         newX = newX + 1 * Math.sin(newY / 0.5 * 0.5);
         newY = newY + 0.7 * Math.sin(newX / 0.3 * 0.3);

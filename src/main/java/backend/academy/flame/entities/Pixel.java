@@ -9,21 +9,19 @@ public class Pixel {
     private int red;
     private int green;
     private int blue;
-    private boolean visited;
-    private int counter;
     private double normal;
+    private long counter;
 
     public Pixel() {
-        visited = false;
         counter = 0;
-        normal = 0.0;
+        normal = 0;
     }
 
     public void setColor(int red, int green, int blue) {
         this.blue = blue;
         this.green = green;
         this.red = red;
-        visited = true;
+        counter++;
     }
 
     public void setAvg(int red, int green, int blue) {
