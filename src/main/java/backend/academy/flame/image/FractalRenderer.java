@@ -31,7 +31,7 @@ import static java.lang.Math.log10;
 import static java.lang.Math.pow;
 
 @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:MultipleStringLiterals", "checkstyle:NestedIfDepth",
-    "Dublicates"})
+    "checkstyle:ParameterNumber"})
 @Slf4j
 public class FractalRenderer {
     private static final double X_MIN = -1.777;
@@ -180,7 +180,6 @@ public class FractalRenderer {
 
     private static void processPointsWithBuffer(
         int start, int end, int it, int xRes, int yRes, int[] tr, Pixel[][] pixels, Random random) {
-        int numSamplesPerTransformation = SAMPLES / tr.length; // Размер блока для каждой трансформации
 
         for (int num = start; num < end; num++) {
             for (int step = -20; step < it; step++) {

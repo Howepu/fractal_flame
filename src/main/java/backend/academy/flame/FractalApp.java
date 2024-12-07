@@ -31,7 +31,7 @@ public class FractalApp {
         int height = Checker.readPositiveInt(scanner, "Введите высоту изображения (рекомендовано 1080):");
 
         // Проверка количества итераций
-        int iterations = Checker.readPositiveInt(scanner, "Введите количество итераций (рекомендовано 5_000_000):");
+        int iterations = Checker.readPositiveInt(scanner, "Введите количество итераций (рекомендовано 1_000_000):");
 
         log.info("Выберите режим обработки (1 - многопоточный, 2 - однопоточный):");
         int choice = Checker.readOneOrTwo(scanner);
