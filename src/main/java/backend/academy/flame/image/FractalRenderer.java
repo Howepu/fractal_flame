@@ -178,77 +178,52 @@ public class FractalRenderer {
         return intPixel;
     }
 
-    private static void processPointsWithLocalBuffer(
-        int start, int end, int it, int xRes, int yRes, int[] tr, Pixel[][] localPixels) {
+    private static void processPointsWithBuffer(
+        int start, int end, int it, int xRes, int yRes, int[] tr, Pixel[][] pixels, Random random) {
         int numSamplesPerTransformation = SAMPLES / tr.length; // Размер блока для каждой трансформации
 
         for (int num = start; num < end; num++) {
             for (int step = -20; step < it; step++) {
-                // Случайные координаты
-                double newX = X_MIN + (X_MAX - X_MIN) * ThreadLocalRandom.current().nextDouble();
-                double newY = Y_MIN + (Y_MAX - Y_MIN) * ThreadLocalRandom.current().nextDouble();
-
+                // Генерация случайных координат
+                double newX = X_MIN + (X_MAX - X_MIN) * random.nextDouble();
+                double newY = Y_MIN + (Y_MAX - Y_MIN) * random.nextDouble();
                 Point point = applyTransformation(num, newX, newY, tr);
 
-                // Проверяем границы и обрабатываем пиксели
+                // Проверка границ и обработка пикселей
                 if (step >= 0 && point.x() >= X_MIN && point.x() <= X_MAX
                     && point.y() >= Y_MIN && point.y() <= Y_MAX) {
                     int x1 = (int) (xRes - Math.floor(((X_MAX - point.x()) / (X_MAX - X_MIN)) * xRes));
                     int y1 = (int) (yRes - Math.floor(((Y_MAX - point.y()) / (Y_MAX - Y_MIN)) * yRes));
 
                     if (x1 >= 0 && x1 < xRes && y1 >= 0 && y1 < yRes) {
-                        Pixel pixel = localPixels[x1][y1];
-                        if (pixel.counter() == 0) {
-                            if (linearTransformations[num] instanceof Colorable colorable) {
-                                pixel.setColor(colorable.getRed(), colorable.getGreen(), colorable.getBlue());
-                            }
-                        } else {
-                            if (linearTransformations[num] instanceof Colorable colorable) {
-                                pixel.setAvg(colorable.getRed(), colorable.getGreen(), colorable.getBlue());
-                            }
-                        }
+                        handlePixel(pixels[x1][y1], num);
                     }
                 }
             }
         }
     }
 
+    private static void handlePixel(Pixel pixel, int num) {
+        if (pixel.counter() == 0) {
+            if (linearTransformations[num] instanceof Colorable colorable) {
+                pixel.setColor(colorable.getRed(), colorable.getGreen(), colorable.getBlue());
+            }
+        } else {
+            if (linearTransformations[num] instanceof Colorable colorable) {
+                pixel.setAvg(colorable.getRed(), colorable.getGreen(), colorable.getBlue());
+            }
+        }
+    }
 
+    private static void processPointsWithLocalBuffer(
+        int start, int end, int it, int xRes, int yRes, int[] tr, Pixel[][] localPixels) {
+        processPointsWithBuffer(start, end, it, xRes, yRes, tr, localPixels, ThreadLocalRandom.current());
+    }
 
     private static void processPoints(int start, int end, int it, int xRes, int yRes, int[] tr) {
-        int numSamplesPerTransformation = SAMPLES / tr.length; // Размер блока для каждой трансформации
-
-        for (int num = start; num < end; num++) {
-            for (int step = -20; step < it; step++) {
-                // Генерация случайных координат
-                double newX = X_MIN + (X_MAX - X_MIN) * RANDOM.nextDouble();
-                double newY = Y_MIN + (Y_MAX - Y_MIN) * RANDOM.nextDouble();
-                Point point = applyTransformation(num, newX, newY, tr);
-
-                // Проверка границ и обработка точек
-                if (step >= 0 && point.x() >= X_MIN && point.x() <= X_MAX && point.y() >= Y_MIN && point.y() <= Y_MAX) {
-                    int x1 = (int) (xRes - Math.floor(((X_MAX - point.x()) / (X_MAX - X_MIN)) * xRes));
-                    int y1 = (int) (yRes - Math.floor(((Y_MAX - point.y()) / (Y_MAX - Y_MIN)) * yRes));
-
-                    if (x1 >= 0 && x1 < xRes && y1 >= 0 && y1 < yRes) {
-                        synchronized (pixels[x1][y1]) {
-                            if (pixels[x1][y1].counter() == 0) {
-                                if (linearTransformations[num] instanceof Colorable colorable) {
-                                    pixels[x1][y1].setColor(colorable.getRed(), colorable.getGreen(),
-                                        colorable.getBlue());
-                                }
-                            } else {
-                                if (linearTransformations[num] instanceof Colorable colorable) {
-                                    pixels[x1][y1].setAvg(colorable.getRed(), colorable.getGreen(),
-                                        colorable.getBlue());
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        processPointsWithBuffer(start, end, it, xRes, yRes, tr, pixels, RANDOM);
     }
+
 
 
     public static void normalizePixels(int xRes, int yRes) {
