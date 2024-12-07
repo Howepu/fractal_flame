@@ -187,14 +187,8 @@ public class FractalRenderer {
                 // Случайные координаты
                 double newX = X_MIN + (X_MAX - X_MIN) * ThreadLocalRandom.current().nextDouble();
                 double newY = Y_MIN + (Y_MAX - Y_MIN) * ThreadLocalRandom.current().nextDouble();
-                Point point = linearTransformations[num].apply(newX, newY);
 
-                // Определяем, какую трансформацию применять
-                int transformationIndex = num / numSamplesPerTransformation;
-                if (transformationIndex < tr.length) {
-                    Transformation transformation = getTransformations(tr).get(transformationIndex);
-                    point = transformation.apply(point.x(), point.y());
-                }
+                Point point = applyTransformation(num, newX, newY, tr);
 
                 // Проверяем границы и обрабатываем пиксели
                 if (step >= 0 && point.x() >= X_MIN && point.x() <= X_MAX
@@ -229,14 +223,7 @@ public class FractalRenderer {
                 // Генерация случайных координат
                 double newX = X_MIN + (X_MAX - X_MIN) * RANDOM.nextDouble();
                 double newY = Y_MIN + (Y_MAX - Y_MIN) * RANDOM.nextDouble();
-                Point point = linearTransformations[num].apply(newX, newY);
-
-                // Определение текущей трансформации
-                int transformationIndex = num / numSamplesPerTransformation;
-                if (transformationIndex < tr.length) {
-                    Transformation transformation = getTransformations(tr).get(transformationIndex);
-                    point = transformation.apply(point.x(), point.y());
-                }
+                Point point = applyTransformation(num, newX, newY, tr);
 
                 // Проверка границ и обработка точек
                 if (step >= 0 && point.x() >= X_MIN && point.x() <= X_MAX && point.y() >= Y_MIN && point.y() <= Y_MAX) {
@@ -307,4 +294,20 @@ public class FractalRenderer {
         }
         return transformations;
     }
+
+    private static Point applyTransformation(int num, double newX, double newY, int[] tr) {
+        // Применяем линейную трансформацию
+        Point point = linearTransformations[num].apply(newX, newY);
+
+        // Определяем, какую трансформацию применять
+        int numSamplesPerTransformation = SAMPLES / tr.length;
+        int transformationIndex = num / numSamplesPerTransformation;
+        if (transformationIndex < tr.length) {
+            Transformation transformation = getTransformations(tr).get(transformationIndex);
+            point = transformation.apply(point.x(), point.y());
+        }
+
+        return point;
+    }
+
 }
