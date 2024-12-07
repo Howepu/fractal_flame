@@ -30,7 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 import static java.lang.Math.log10;
 import static java.lang.Math.pow;
 
-@SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:MultipleStringLiterals", "checkstyle:NestedIfDepth"})
+@SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:MultipleStringLiterals", "checkstyle:NestedIfDepth",
+    "Dublicates"})
 @Slf4j
 public class FractalRenderer {
     private static final double X_MIN = -1.777;
