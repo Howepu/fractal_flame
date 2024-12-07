@@ -1,6 +1,5 @@
 package backend.academy.flame.image;
 
-import backend.academy.flame.Checker;
 import backend.academy.flame.entities.Pixel;
 import backend.academy.flame.entities.Point;
 import backend.academy.flame.transformations.CircularTransformation;
@@ -25,6 +24,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadLocalRandom;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
 import static java.lang.Math.log10;
@@ -37,7 +37,7 @@ public class FractalRenderer {
     private static final double X_MAX = 1.777;
     private static final double Y_MIN = -1;
     private static final double Y_MAX = 1;
-    private static final int SAMPLES = 30;
+    private static final int SAMPLES = 100;
     private static final Random RANDOM = new Random();
     private static Transformation[] linearTransformations;
     private static Pixel[][] pixels;
@@ -48,7 +48,7 @@ public class FractalRenderer {
         throw new AssertionError("Не удается создать экземпляр служебного класса");
     }
 
-    public static void createFlamePic(int width, int height, int it) {
+    public static void createFlamePic(int width, int height, int it, int choice, int[] tr) {
         long startTime = System.nanoTime(); // Замер времени начала
 
         linearTransformations = new Transformation[SAMPLES];
@@ -60,14 +60,12 @@ public class FractalRenderer {
         }
 
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        log.info("Выберите режим обработки (1 - многопоточный, 2 - однопоточный):");
-        int choice = Checker.readOneOrTwo(scanner);
 
         int[] rgbData;
         if (choice == 1) {
-            rgbData = processPointsMultithreaded(SAMPLES, it, width, height);
+            rgbData = processPointsMultithreaded(SAMPLES, it, width, height, tr);
         } else {
-            rgbData = processPointsSingleThreaded(SAMPLES, it, width, height);
+            rgbData = processPointsSingleThreaded(SAMPLES, it, width, height, tr);
         }
 
         image.setRGB(0, 0, width, height, rgbData, 0, width);
@@ -91,8 +89,7 @@ public class FractalRenderer {
         log.info("Время выполнения: {} секунд", duration);
     }
 
-    public static int[] processPointsMultithreaded(int n, int it, int xRes, int yRes) {
-        int tr = Checker.readPositiveInt(scanner, "Введите номер трансформации:");
+    public static int[] processPointsMultithreaded(int n, int it, int xRes, int yRes, int[] tr) {
 
         int threadsCount = Runtime.getRuntime().availableProcessors();
         ExecutorService executor = Executors.newFixedThreadPool(threadsCount);
@@ -158,8 +155,7 @@ public class FractalRenderer {
     }
 
 
-    public static int[] processPointsSingleThreaded(int n, int it, int xRes, int yRes) {
-        int tr = Checker.readPositiveInt(scanner, "Введите номер трансформации:");
+    public static int[] processPointsSingleThreaded(int n, int it, int xRes, int yRes, int[] tr) {
 
         for (int num = 0; num < n; num++) {
             processPoints(num, num + 1, it, xRes, yRes, tr);
@@ -181,17 +177,27 @@ public class FractalRenderer {
         return intPixel;
     }
 
-    private static void processPointsWithLocalBuffer(int start, int end, int it, int xRes, int yRes,
-        int tr, Pixel[][] localPixels) {
+    private static void processPointsWithLocalBuffer(
+        int start, int end, int it, int xRes, int yRes, int[] tr, Pixel[][] localPixels) {
+        int numSamplesPerTransformation = SAMPLES / tr.length; // Размер блока для каждой трансформации
+
         for (int num = start; num < end; num++) {
             for (int step = -20; step < it; step++) {
-                double newX = X_MIN + (X_MAX - X_MIN) * RANDOM.nextDouble();
-                double newY = Y_MIN + (Y_MAX - Y_MIN) * RANDOM.nextDouble();
+                // Случайные координаты
+                double newX = X_MIN + (X_MAX - X_MIN) * ThreadLocalRandom.current().nextDouble();
+                double newY = Y_MIN + (Y_MAX - Y_MIN) * ThreadLocalRandom.current().nextDouble();
                 Point point = linearTransformations[num].apply(newX, newY);
 
-                point = getTransformation(tr).apply(point.x(), point.y());
+                // Определяем, какую трансформацию применять
+                int transformationIndex = num / numSamplesPerTransformation;
+                if (transformationIndex < tr.length) {
+                    Transformation transformation = getTransformations(tr).get(transformationIndex);
+                    point = transformation.apply(point.x(), point.y());
+                }
 
-                if (step >= 0 && point.x() >= X_MIN && point.x() <= X_MAX && point.y() >= Y_MIN && point.y() <= Y_MAX) {
+                // Проверяем границы и обрабатываем пиксели
+                if (step >= 0 && point.x() >= X_MIN && point.x() <= X_MAX
+                    && point.y() >= Y_MIN && point.y() <= Y_MAX) {
                     int x1 = (int) (xRes - Math.floor(((X_MAX - point.x()) / (X_MAX - X_MIN)) * xRes));
                     int y1 = (int) (yRes - Math.floor(((Y_MAX - point.y()) / (Y_MAX - Y_MIN)) * yRes));
 
@@ -212,15 +218,26 @@ public class FractalRenderer {
         }
     }
 
-    private static void processPoints(int start, int end, int it, int xRes, int yRes, int tr) {
+
+
+    private static void processPoints(int start, int end, int it, int xRes, int yRes, int[] tr) {
+        int numSamplesPerTransformation = SAMPLES / tr.length; // Размер блока для каждой трансформации
+
         for (int num = start; num < end; num++) {
             for (int step = -20; step < it; step++) {
+                // Генерация случайных координат
                 double newX = X_MIN + (X_MAX - X_MIN) * RANDOM.nextDouble();
                 double newY = Y_MIN + (Y_MAX - Y_MIN) * RANDOM.nextDouble();
                 Point point = linearTransformations[num].apply(newX, newY);
 
-                point = getTransformation(tr).apply(point.x(), point.y());
+                // Определение текущей трансформации
+                int transformationIndex = num / numSamplesPerTransformation;
+                if (transformationIndex < tr.length) {
+                    Transformation transformation = getTransformations(tr).get(transformationIndex);
+                    point = transformation.apply(point.x(), point.y());
+                }
 
+                // Проверка границ и обработка точек
                 if (step >= 0 && point.x() >= X_MIN && point.x() <= X_MAX && point.y() >= Y_MIN && point.y() <= Y_MAX) {
                     int x1 = (int) (xRes - Math.floor(((X_MAX - point.x()) / (X_MAX - X_MIN)) * xRes));
                     int y1 = (int) (yRes - Math.floor(((Y_MAX - point.y()) / (Y_MAX - Y_MIN)) * yRes));
@@ -245,7 +262,8 @@ public class FractalRenderer {
         }
     }
 
-    private static void normalizePixels(int xRes, int yRes) {
+
+    public static void normalizePixels(int xRes, int yRes) {
         double max = 0.0;
         double gamma = 0.8;
 
@@ -271,17 +289,22 @@ public class FractalRenderer {
         }
     }
 
-    private static Transformation getTransformation(int tr) {
-        return switch (tr) {
-            case 1 -> new HeartTransformation();
-            case 2 -> new EyeFishTransformation();
-            case 3 -> new WavesTransformation();
-            case 4 -> new TangentTransformation();
-            case 5 -> new CrossTransformation();
-            case 6 -> new CircularTransformation();
-            case 7 -> new SwirlTransformation();
-            case 8 -> new SpiralTransformation();
-            default -> new LinearTransformation();
-        };
+    private static List<Transformation> getTransformations(int[] tr) {
+        List<Transformation> transformations = new ArrayList<>();
+        for (int t : tr) {
+            switch (t) {
+                case 1 -> transformations.add(new CircularTransformation());
+                case 2 -> transformations.add(new CrossTransformation());
+                case 3 -> transformations.add(new EyeFishTransformation());
+                case 4 -> transformations.add(new HeartTransformation());
+                case 5 -> transformations.add(new LinearTransformation());
+                case 6 -> transformations.add(new SpiralTransformation());
+                case 7 -> transformations.add(new SwirlTransformation());
+                case 8 -> transformations.add(new TangentTransformation());
+                case 9 -> transformations.add(new WavesTransformation());
+                default -> throw new IllegalArgumentException("Неизвестная трансформация: " + t);
+            }
+        }
+        return transformations;
     }
 }
