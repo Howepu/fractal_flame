@@ -297,11 +297,10 @@ public class FractalRenderer {
                 case 2 -> transformations.add(new CrossTransformation());
                 case 3 -> transformations.add(new EyeFishTransformation());
                 case 4 -> transformations.add(new HeartTransformation());
-                case 5 -> transformations.add(new LinearTransformation());
-                case 6 -> transformations.add(new SpiralTransformation());
-                case 7 -> transformations.add(new SwirlTransformation());
-                case 8 -> transformations.add(new TangentTransformation());
-                case 9 -> transformations.add(new WavesTransformation());
+                case 5 -> transformations.add(new SpiralTransformation());
+                case 6 -> transformations.add(new SwirlTransformation());
+                case 7 -> transformations.add(new TangentTransformation());
+                case 8 -> transformations.add(new WavesTransformation());
                 default -> throw new IllegalArgumentException("Неизвестная трансформация: " + t);
             }
         }
