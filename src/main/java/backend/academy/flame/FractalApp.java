@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @SuppressWarnings({"checkstyle:UncommentedMain", "checkstyle:MagicNumber"})
 public class FractalApp {
-    private static final int THREADS = 4;
+    private static final int THREADS = Runtime.getRuntime().availableProcessors();
 
 
     private FractalApp() {
@@ -33,9 +33,14 @@ public class FractalApp {
         // Проверка количества итераций
         int iterations = Checker.readPositiveInt(scanner, "Введите количество итераций (рекомендовано 5_000_000):");
 
-        FractalRenderer.createFlamePic(width, height, iterations);
+        log.info("Выберите режим обработки (1 - многопоточный, 2 - однопоточный):");
+        int choice = Checker.readOneOrTwo(scanner);
 
-   }
+        int[] tr = Checker.getInputArrayFromConsole();
+
+        FractalRenderer.createFlamePic(width, height, iterations, choice, tr);
+
+    }
 
     private static void logSystemConfiguration() {
         Runtime runtime = Runtime.getRuntime();
