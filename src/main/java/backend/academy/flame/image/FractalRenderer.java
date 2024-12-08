@@ -43,7 +43,6 @@ public class FractalRenderer {
     private static Transformation[] linearTransformations;
     private static Pixel[][] pixels;
     private static BufferedImage image;
-    private static Scanner scanner = new Scanner(System.in);
 
     private FractalRenderer() {
         throw new AssertionError("Не удается создать экземпляр служебного класса");

@@ -51,7 +51,7 @@ public class Checker {
         ArrayList<Integer> numbers = new ArrayList<>();
 
         while (true) {
-            log.info("1-Circular, 2-Cross, 3-EyeFish, 4-Heart, 5-Linear, 6-Spiral, 7-Swirl, 8-Tangent, 9-Waves");
+            log.info("1-Circular, 2-Cross, 3-EyeFish, 4-Heart, 5-Spiral, 6-Swirl, 7-Tangent, 8-Waves");
             log.info("Введите одну трансформацию или несколько через запятую (от 1 до 9):");
             String input = scanner.nextLine();
 
