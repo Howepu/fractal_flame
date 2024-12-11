@@ -46,8 +46,7 @@ public class Checker {
         }
     }
 
-    public static int[] getInputArrayFromConsole() {
-        Scanner scanner = new Scanner(System.in);
+    public static int[] getInputArrayFromConsole(Scanner scanner) {
         ArrayList<Integer> numbers = new ArrayList<>();
 
         while (true) {

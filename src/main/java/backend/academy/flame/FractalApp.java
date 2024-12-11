@@ -1,8 +1,6 @@
 package backend.academy.flame;
 
 import backend.academy.flame.image.FractalRenderer;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Scanner;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,7 +20,7 @@ public class FractalApp {
         log.info("Используется {} потока", THREADS);
 
         Scanner scanner = new Scanner(System.in);
-        Path outputPath = Paths.get("fractal_flame");
+
 
         // Проверка ширины
         int width = Checker.readPositiveInt(scanner, "Введите ширину изображения (рекомендовано 1920):");
@@ -36,7 +34,7 @@ public class FractalApp {
         log.info("Выберите режим обработки (1 - многопоточный, 2 - однопоточный):");
         int choice = Checker.readOneOrTwo(scanner);
 
-        int[] tr = Checker.getInputArrayFromConsole();
+        int[] tr = Checker.getInputArrayFromConsole(scanner);
 
         FractalRenderer.createFlamePic(width, height, iterations, choice, tr);
 

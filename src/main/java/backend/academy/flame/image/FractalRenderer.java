@@ -192,6 +192,7 @@ public class FractalRenderer {
                     int x1 = (int) (xRes - Math.floor(((X_MAX - point.x()) / (X_MAX - X_MIN)) * xRes));
                     int y1 = (int) (yRes - Math.floor(((Y_MAX - point.y()) / (Y_MAX - Y_MIN)) * yRes));
 
+
                     if (x1 >= 0 && x1 < xRes && y1 >= 0 && y1 < yRes) {
                         handlePixel(pixels[x1][y1], num);
                     }
