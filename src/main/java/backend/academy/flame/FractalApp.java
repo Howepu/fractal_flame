@@ -2,17 +2,14 @@ package backend.academy.flame;
 
 import backend.academy.flame.image.FractalRenderer;
 import java.util.Scanner;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SuppressWarnings({"checkstyle:UncommentedMain", "checkstyle:MagicNumber"})
+@UtilityClass
 public class FractalApp {
     private static final int THREADS = Runtime.getRuntime().availableProcessors();
-
-
-    private FractalApp() {
-        throw new AssertionError("Не удается создать экземпляр служебного класса");
-    }
 
     public static void main(String[] args) throws Exception {
         logSystemConfiguration(); // Вывод конфигурации системы
@@ -23,18 +20,19 @@ public class FractalApp {
 
 
         // Проверка ширины
-        int width = Checker.readPositiveInt(scanner, "Введите ширину изображения (рекомендовано 1920):");
+        int width = InputValidator.readPositiveInt(scanner, "Введите ширину изображения (рекомендовано 1920):");
 
         // Проверка высоты
-        int height = Checker.readPositiveInt(scanner, "Введите высоту изображения (рекомендовано 1080):");
+        int height = InputValidator.readPositiveInt(scanner, "Введите высоту изображения (рекомендовано 1080):");
 
         // Проверка количества итераций
-        int iterations = Checker.readPositiveInt(scanner, "Введите количество итераций (рекомендовано 1_000_000):");
+        int iterations = InputValidator.readPositiveInt(scanner,
+            "Введите количество итераций (рекомендовано 1_000_000):");
 
         log.info("Выберите режим обработки (1 - многопоточный, 2 - однопоточный):");
-        int choice = Checker.readOneOrTwo(scanner);
+        int choice = InputValidator.readOneOrTwo(scanner);
 
-        int[] tr = Checker.getInputArrayFromConsole(scanner);
+        int[] tr = InputValidator.getInputArrayFromConsole(scanner);
 
         FractalRenderer.createFlamePic(width, height, iterations, choice, tr);
 
